@@ -1,0 +1,252 @@
+/// <amd-module name="@scom/scom-pie-chart/global/interfaces.ts" />
+declare module "@scom/scom-pie-chart/global/interfaces.ts" {
+    export interface IPieChartOptions {
+        title: string;
+        description?: string;
+        options: {
+            xColumn: string;
+            yColumn: string;
+            serieName?: string;
+            legend?: boolean;
+            showDataLabels?: boolean;
+            numberFormat?: string;
+            valuesOptions?: {
+                name: string;
+                color: string;
+            }[];
+        };
+    }
+    export interface IPieChartConfig {
+        apiEndpoint: string;
+        options: IPieChartOptions;
+    }
+}
+/// <amd-module name="@scom/scom-pie-chart/global/utils.ts" />
+declare module "@scom/scom-pie-chart/global/utils.ts" {
+    export const formatNumber: (num: number, options?: {
+        format?: string;
+        decimals?: number;
+        percentValues?: boolean;
+    }) => any;
+    export const formatNumberByFormat: (num: number, format: string, separators?: boolean) => any;
+    export const formatNumberWithSeparators: (value: number, precision?: number) => string;
+    export const callAPI: (apiEndpoint: string) => Promise<any>;
+}
+/// <amd-module name="@scom/scom-pie-chart/global/index.ts" />
+declare module "@scom/scom-pie-chart/global/index.ts" {
+    export interface PageBlock {
+        getData: () => any;
+        setData: (data: any) => Promise<void>;
+        getTag: () => any;
+        setTag: (tag: any) => Promise<void>;
+        validate?: () => boolean;
+        defaultEdit?: boolean;
+        tag?: any;
+        readonly onEdit: () => Promise<void>;
+        readonly onConfirm: () => Promise<void>;
+        readonly onDiscard: () => Promise<void>;
+        edit: () => Promise<void>;
+        confirm: () => Promise<void>;
+        discard: () => Promise<void>;
+        config: () => Promise<void>;
+    }
+    export * from "@scom/scom-pie-chart/global/interfaces.ts";
+    export * from "@scom/scom-pie-chart/global/utils.ts";
+}
+/// <amd-module name="@scom/scom-pie-chart/index.css.ts" />
+declare module "@scom/scom-pie-chart/index.css.ts" {
+    export const containerStyle: string;
+    export const chartStyle: string;
+}
+/// <amd-module name="@scom/scom-pie-chart/assets.ts" />
+declare module "@scom/scom-pie-chart/assets.ts" {
+    function fullPath(path: string): string;
+    const _default: {
+        fullPath: typeof fullPath;
+    };
+    export default _default;
+}
+/// <amd-module name="@scom/scom-pie-chart" />
+declare module "@scom/scom-pie-chart" {
+    import { Module, ControlElement, Container, IDataSchema } from '@ijstech/components';
+    import { PageBlock, IPieChartConfig } from "@scom/scom-pie-chart/global/index.ts";
+    interface ScomPieChartElement extends ControlElement {
+        data: IPieChartConfig;
+    }
+    global {
+        namespace JSX {
+            interface IntrinsicElements {
+                ['i-scom-pie-chart']: ScomPieChartElement;
+            }
+        }
+    }
+    export default class ScomPieChart extends Module implements PageBlock {
+        private pieChartContainer;
+        private vStackInfo;
+        private pnlPieChart;
+        private loadingElm;
+        private lbTitle;
+        private lbDescription;
+        private pieChartData;
+        private apiEndpoint;
+        private _oldData;
+        private _data;
+        private oldTag;
+        tag: any;
+        defaultEdit: boolean;
+        readonly onConfirm: () => Promise<void>;
+        readonly onDiscard: () => Promise<void>;
+        readonly onEdit: () => Promise<void>;
+        static create(options?: ScomPieChartElement, parent?: Container): Promise<ScomPieChart>;
+        constructor(parent?: Container, options?: ScomPieChartElement);
+        getData(): IPieChartConfig;
+        setData(data: IPieChartConfig): Promise<void>;
+        getTag(): any;
+        setTag(value: any): Promise<void>;
+        getConfigSchema(): IDataSchema;
+        onConfigSave(config: any): void;
+        edit(): Promise<void>;
+        confirm(): Promise<void>;
+        discard(): Promise<void>;
+        config(): Promise<void>;
+        private getPropertiesSchema;
+        private getThemeSchema;
+        getEmbedderActions(): ({
+            name: string;
+            icon: string;
+            command: (builder: any, userInputData: any) => {
+                execute: () => Promise<void>;
+                undo: () => void;
+                redo: () => void;
+            };
+            userInputDataSchema: IDataSchema;
+            userInputUISchema: {
+                type: string;
+                elements: ({
+                    type: string;
+                    scope: string;
+                    title: string;
+                    options?: undefined;
+                } | {
+                    type: string;
+                    scope: string;
+                    title?: undefined;
+                    options?: undefined;
+                } | {
+                    type: string;
+                    scope: string;
+                    options: {
+                        detail: {
+                            type: string;
+                        };
+                    };
+                    title?: undefined;
+                })[];
+            };
+        } | {
+            name: string;
+            icon: string;
+            command: (builder: any, userInputData: any) => {
+                execute: () => Promise<void>;
+                undo: () => void;
+                redo: () => void;
+            };
+            userInputDataSchema: IDataSchema;
+            userInputUISchema?: undefined;
+        })[];
+        getActions(): ({
+            name: string;
+            icon: string;
+            command: (builder: any, userInputData: any) => {
+                execute: () => Promise<void>;
+                undo: () => void;
+                redo: () => void;
+            };
+            userInputDataSchema: IDataSchema;
+            userInputUISchema: {
+                type: string;
+                elements: ({
+                    type: string;
+                    scope: string;
+                    title: string;
+                    options?: undefined;
+                } | {
+                    type: string;
+                    scope: string;
+                    title?: undefined;
+                    options?: undefined;
+                } | {
+                    type: string;
+                    scope: string;
+                    options: {
+                        detail: {
+                            type: string;
+                        };
+                    };
+                    title?: undefined;
+                })[];
+            };
+        } | {
+            name: string;
+            icon: string;
+            command: (builder: any, userInputData: any) => {
+                execute: () => Promise<void>;
+                undo: () => void;
+                redo: () => void;
+            };
+            userInputDataSchema: IDataSchema;
+            userInputUISchema?: undefined;
+        })[];
+        _getActions(propertiesSchema: IDataSchema, themeSchema: IDataSchema): ({
+            name: string;
+            icon: string;
+            command: (builder: any, userInputData: any) => {
+                execute: () => Promise<void>;
+                undo: () => void;
+                redo: () => void;
+            };
+            userInputDataSchema: IDataSchema;
+            userInputUISchema: {
+                type: string;
+                elements: ({
+                    type: string;
+                    scope: string;
+                    title: string;
+                    options?: undefined;
+                } | {
+                    type: string;
+                    scope: string;
+                    title?: undefined;
+                    options?: undefined;
+                } | {
+                    type: string;
+                    scope: string;
+                    options: {
+                        detail: {
+                            type: string;
+                        };
+                    };
+                    title?: undefined;
+                })[];
+            };
+        } | {
+            name: string;
+            icon: string;
+            command: (builder: any, userInputData: any) => {
+                execute: () => Promise<void>;
+                undo: () => void;
+                redo: () => void;
+            };
+            userInputDataSchema: IDataSchema;
+            userInputUISchema?: undefined;
+        })[];
+        private updateStyle;
+        private updateTheme;
+        private onUpdateBlock;
+        private updateChartData;
+        private renderChart;
+        private resizeChart;
+        init(): Promise<void>;
+        render(): any;
+    }
+}
