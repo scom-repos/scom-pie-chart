@@ -36,8 +36,8 @@ export const formatNumberByFormat = (num: number, format: string, separators?: b
   }
   const currencySymbol = format.indexOf('$') !== -1 ? '$' : '';
   const roundedNum = formatNumberWithSeparators(num, decimalPlaces);
-  if (separators && !format.includes('.ma')) {
-    return `${currencySymbol}${roundedNum}`;
+  if (separators || !(format.includes('m') || format.includes('a'))) {
+    return format.indexOf('$') === 0 ? `${currencySymbol}${roundedNum}` : `${roundedNum}${currencySymbol}`;
   }
   const parts = roundedNum.split('.');
   const decimalPart = parts.length > 1 ? parts[1] : '';

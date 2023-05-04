@@ -62,8 +62,8 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports"], function 
         }
         const currencySymbol = format.indexOf('$') !== -1 ? '$' : '';
         const roundedNum = exports.formatNumberWithSeparators(num, decimalPlaces);
-        if (separators && !format.includes('.ma')) {
-            return `${currencySymbol}${roundedNum}`;
+        if (separators || !(format.includes('m') || format.includes('a'))) {
+            return format.indexOf('$') === 0 ? `${currencySymbol}${roundedNum}` : `${roundedNum}${currencySymbol}`;
         }
         const parts = roundedNum.split('.');
         const decimalPart = parts.length > 1 ? parts[1] : '';
@@ -520,7 +520,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                         this.$render("i-icon", { class: "i-loading-spinner_icon", image: { url: assets_1.default.fullPath('img/loading.svg'), width: 36, height: 36 } }))),
                 this.$render("i-vstack", { id: "vStackInfo", width: "100%", maxWidth: "100%", margin: { left: 'auto', right: 'auto', bottom: 10 }, verticalAlignment: "center" },
                     this.$render("i-label", { id: "lbTitle", font: { bold: true, color: Theme.text.primary } }),
-                    this.$render("i-label", { id: "lbDescription", margin: { top: 10 }, font: { color: Theme.text.primary } })),
+                    this.$render("i-label", { id: "lbDescription", margin: { top: 5 }, font: { color: Theme.text.primary } })),
                 this.$render("i-panel", { id: "pnlPieChart", width: "100%", height: "inherit" })));
         }
     };
