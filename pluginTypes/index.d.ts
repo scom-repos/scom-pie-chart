@@ -7,7 +7,11 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
             xColumn: string;
             yColumn: string;
             serieName?: string;
-            legend?: boolean;
+            legend?: {
+                show?: boolean;
+                scroll?: boolean;
+                position?: 'top' | 'bottom' | 'left' | 'right';
+            };
             showDataLabels?: boolean;
             numberFormat?: string;
             valuesOptions?: {

@@ -144,8 +144,20 @@ export default class ScomPieChart extends Module implements PageBlock {
                   type: 'string'
                 },
                 legend: {
-                  type: 'boolean',
-                  title: 'Show Chart Legend'
+                  type: 'object',
+                  title: 'Show Chart Legend',
+                  properties: {
+                    show: {
+                      type: 'boolean'
+                    },
+                    scroll: {
+                      type: 'boolean'
+                    },
+                    position: {
+                      type: 'string',
+                      enum: ['top', 'bottom', 'left', 'right']
+                    }
+                  }
                 },
                 showDataLabels: {
                   type: 'boolean'
@@ -332,6 +344,18 @@ export default class ScomPieChart extends Module implements PageBlock {
     this.lbDescription.visible = !!description;
     this.pnlPieChart.height = `calc(100% - ${this.vStackInfo.offsetHeight + 10}px)`;
     const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions } = options;
+    let _legend = {
+      show: legend?.show,
+    }
+    if (legend?.position) {
+      _legend[legend.position] = 'auto';
+      if (['left', 'right'].includes(legend.position)) {
+        _legend['orient'] = 'vertical';
+      }
+    }
+    if (legend?.scroll) {
+      _legend['type'] = 'scroll';
+    }
     const data = this.pieChartData.map((v) => {
       const values = valuesOptions.find(f => f.name === v[xColumn]);
       return {
@@ -374,9 +398,7 @@ export default class ScomPieChart extends Module implements PageBlock {
             ${params.marker} ${params.seriesName}: ${formatNumberByFormat(params.value, numberFormat)}`;
         }
       },
-      legend: {
-        show: legend
-      },
+      legend: _legend,
       series: [
         {
           name: serieName || yColumn,

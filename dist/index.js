@@ -231,8 +231,20 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                                         type: 'string'
                                     },
                                     legend: {
-                                        type: 'boolean',
-                                        title: 'Show Chart Legend'
+                                        type: 'object',
+                                        title: 'Show Chart Legend',
+                                        properties: {
+                                            show: {
+                                                type: 'boolean'
+                                            },
+                                            scroll: {
+                                                type: 'boolean'
+                                            },
+                                            position: {
+                                                type: 'string',
+                                                enum: ['top', 'bottom', 'left', 'right']
+                                            }
+                                        }
                                     },
                                     showDataLabels: {
                                         type: 'boolean'
@@ -416,6 +428,18 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.lbDescription.visible = !!description;
             this.pnlPieChart.height = `calc(100% - ${this.vStackInfo.offsetHeight + 10}px)`;
             const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions } = options;
+            let _legend = {
+                show: legend === null || legend === void 0 ? void 0 : legend.show,
+            };
+            if (legend === null || legend === void 0 ? void 0 : legend.position) {
+                _legend[legend.position] = 'auto';
+                if (['left', 'right'].includes(legend.position)) {
+                    _legend['orient'] = 'vertical';
+                }
+            }
+            if (legend === null || legend === void 0 ? void 0 : legend.scroll) {
+                _legend['type'] = 'scroll';
+            }
             const data = this.pieChartData.map((v) => {
                 const values = valuesOptions.find(f => f.name === v[xColumn]);
                 return {
@@ -460,9 +484,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             ${params.marker} ${params.seriesName}: ${index_1.formatNumberByFormat(params.value, numberFormat)}`;
                     }
                 },
-                legend: {
-                    show: legend
-                },
+                legend: _legend,
                 series: [
                     {
                         name: serieName || yColumn,
