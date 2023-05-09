@@ -169,29 +169,34 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             return this.tag;
         }
         async setTag(value) {
-            this.tag = value || {};
+            const newValue = value || {};
+            for (let prop in newValue) {
+                if (newValue.hasOwnProperty(prop)) {
+                    this.tag[prop] = newValue[prop];
+                }
+            }
             this.width = this.tag.width || 700;
             this.height = this.tag.height || 500;
             this.onUpdateBlock();
         }
-        getConfigSchema() {
-            return this.getThemeSchema();
-        }
-        onConfigSave(config) {
-            this.tag = config;
-            this.onUpdateBlock();
-        }
-        async edit() {
-            // this.pieChartContainer.visible = false
-        }
-        async confirm() {
-            this.onUpdateBlock();
-            // this.pieChartContainer.visible = true
-        }
-        async discard() {
-            // this.pieChartContainer.visible = true
-        }
-        async config() { }
+        // getConfigSchema() {
+        //   return this.getThemeSchema();
+        // }
+        // onConfigSave(config: any) {
+        //   this.tag = config;
+        //   this.onUpdateBlock();
+        // }
+        // async edit() {
+        //   // this.pieChartContainer.visible = false
+        // }
+        // async confirm() {
+        //   this.onUpdateBlock();
+        //   // this.pieChartContainer.visible = true
+        // }
+        // async discard() {
+        //   // this.pieChartContainer.visible = true
+        // }
+        // async config() { }
         getPropertiesSchema(readOnly) {
             const propertiesSchema = {
                 type: 'object',
@@ -299,12 +304,6 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             };
             return themeSchema;
         }
-        getEmbedderActions() {
-            return this._getActions(this.getPropertiesSchema(true), this.getThemeSchema(true));
-        }
-        getActions() {
-            return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
-        }
         _getActions(propertiesSchema, themeSchema) {
             const actions = [
                 {
@@ -364,7 +363,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                             execute: async () => {
                                 if (!userInputData)
                                     return;
-                                this.oldTag = Object.assign({}, this.tag);
+                                this.oldTag = JSON.parse(JSON.stringify(this.tag));
                                 this.setTag(userInputData);
                                 if (builder)
                                     builder.setTag(userInputData);
@@ -383,6 +382,32 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 }
             ];
             return actions;
+        }
+        getConfigurators() {
+            return [
+                {
+                    name: 'Builder Configurator',
+                    target: 'Builders',
+                    getActions: () => {
+                        return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
+                    },
+                    getData: this.getData.bind(this),
+                    setData: this.setData.bind(this),
+                    getTag: this.getTag.bind(this),
+                    setTag: this.setTag.bind(this)
+                },
+                {
+                    name: 'Emdedder Configurator',
+                    target: 'Embedders',
+                    getActions: () => {
+                        return this._getActions(this.getPropertiesSchema(true), this.getThemeSchema(true));
+                    },
+                    getData: this.getData.bind(this),
+                    setData: this.setData.bind(this),
+                    getTag: this.getTag.bind(this),
+                    setTag: this.setTag.bind(this)
+                }
+            ];
         }
         updateStyle(name, value) {
             value ? this.style.setProperty(name, value) : this.style.removeProperty(name);
