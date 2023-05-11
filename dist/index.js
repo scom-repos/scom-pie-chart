@@ -137,7 +137,49 @@ define("@scom/scom-pie-chart/assets.ts", ["require", "exports", "@ijstech/compon
         fullPath
     };
 });
-define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@scom/scom-pie-chart/global/index.ts", "@scom/scom-pie-chart/index.css.ts", "@scom/scom-pie-chart/assets.ts"], function (require, exports, components_3, index_1, index_css_1, assets_1) {
+define("@scom/scom-pie-chart/data.json.ts", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    ///<amd-module name='@scom/scom-pie-chart/data.json.ts'/> 
+    exports.default = {
+        "defaultBuilderData": {
+            "apiEndpoint": "https://api.dune.com/api/v1/query/2030664/results?api_key=GZ0R7Jim7TWLY7umXitxtiswiaD4eM7j",
+            "options": {
+                "title": "Ethereum Beacon Chain Deposits Entity",
+                "options": {
+                    "xColumn": "entity",
+                    "yColumn": "eth_deposited",
+                    "serieName": "ETH deposited",
+                    "numberFormat": "0,000.00ma",
+                    "showDataLabels": true,
+                    "valuesOptions": [
+                        {
+                            "name": "Lido",
+                            "color": "#e58f8f"
+                        },
+                        {
+                            "name": "Other",
+                            "color": "#a9a4a4"
+                        },
+                        {
+                            "name": "Kraken",
+                            "color": "#0077ff"
+                        },
+                        {
+                            "name": "Binance",
+                            "color": "#f4f000"
+                        },
+                        {
+                            "name": "Coinbase",
+                            "color": "#0c22e3"
+                        }
+                    ]
+                }
+            }
+        }
+    };
+});
+define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@scom/scom-pie-chart/global/index.ts", "@scom/scom-pie-chart/index.css.ts", "@scom/scom-pie-chart/assets.ts", "@scom/scom-pie-chart/data.json.ts"], function (require, exports, components_3, index_1, index_css_1, assets_1, data_json_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_3.Styles.Theme.ThemeVars;
@@ -146,9 +188,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             super(parent, options);
             this.pieChartData = [];
             this.apiEndpoint = '';
-            this._oldData = { apiEndpoint: '', options: undefined };
             this._data = { apiEndpoint: '', options: undefined };
-            this.oldTag = {};
             this.tag = {};
             this.defaultEdit = true;
         }
@@ -161,7 +201,6 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             return this._data;
         }
         async setData(data) {
-            this._oldData = this._data;
             this._data = data;
             this.updateChartData();
         }
@@ -310,18 +349,22 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     name: 'Settings',
                     icon: 'cog',
                     command: (builder, userInputData) => {
+                        let _oldData = { apiEndpoint: '', options: undefined };
                         return {
                             execute: async () => {
-                                if (builder === null || builder === void 0 ? void 0 : builder.setData) {
+                                _oldData = Object.assign({}, this._data);
+                                if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.apiEndpoint) !== undefined)
+                                    this._data.apiEndpoint = userInputData.apiEndpoint;
+                                if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.options) !== undefined)
+                                    this._data.options = userInputData.options;
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
                                     builder.setData(userInputData);
-                                }
-                                this.setData(userInputData);
+                                this.setData(this._data);
                             },
                             undo: () => {
-                                if (builder === null || builder === void 0 ? void 0 : builder.setData) {
-                                    builder.setData(this._oldData);
-                                }
-                                this.setData(this._oldData);
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(_oldData);
+                                this.setData(_oldData);
                             },
                             redo: () => { }
                         };
@@ -359,21 +402,25 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     name: 'Theme Settings',
                     icon: 'palette',
                     command: (builder, userInputData) => {
+                        let oldTag = {};
                         return {
                             execute: async () => {
                                 if (!userInputData)
                                     return;
-                                this.oldTag = JSON.parse(JSON.stringify(this.tag));
-                                this.setTag(userInputData);
+                                oldTag = Object.assign({}, this.tag);
                                 if (builder)
                                     builder.setTag(userInputData);
+                                else
+                                    this.setTag(userInputData);
                             },
                             undo: () => {
                                 if (!userInputData)
                                     return;
-                                this.setTag(this.oldTag);
+                                this.tag = Object.assign({}, oldTag);
                                 if (builder)
-                                    builder.setTag(this.oldTag);
+                                    builder.setTag(oldTag);
+                                else
+                                    this.setTag(oldTag);
                             },
                             redo: () => { }
                         };
@@ -392,7 +439,10 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                         return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
                     },
                     getData: this.getData.bind(this),
-                    setData: this.setData.bind(this),
+                    setData: async (data) => {
+                        const defaultData = data_json_1.default.defaultBuilderData;
+                        await this.setData(Object.assign(Object.assign({}, defaultData), data));
+                    },
                     getTag: this.getTag.bind(this),
                     setTag: this.setTag.bind(this)
                 },
@@ -445,7 +495,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.onUpdateBlock();
         }
         renderChart() {
-            if (!this.pnlPieChart && this._data.options)
+            if ((!this.pnlPieChart && this._data.options) || !this._data.options)
                 return;
             const { title, description, options } = this._data.options;
             this.lbTitle.caption = title;

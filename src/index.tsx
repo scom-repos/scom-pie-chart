@@ -12,9 +12,10 @@ import {
   Panel,
   PieChart
 } from '@ijstech/components';
-import { PageBlock, IPieChartConfig, callAPI, formatNumberByFormat } from './global/index';
+import { IPieChartConfig, callAPI, formatNumberByFormat } from './global/index';
 import { chartStyle, containerStyle } from './index.css';
 import assets from './assets';
+import dataJson from './data.json';
 const Theme = Styles.Theme.ThemeVars;
 
 interface ScomPieChartElement extends ControlElement {
@@ -41,9 +42,7 @@ export default class ScomPieChart extends Module {
   private pieChartData: { [key: string]: string | number }[] = [];
   private apiEndpoint = '';
 
-  private _oldData: IPieChartConfig = { apiEndpoint: '', options: undefined };
   private _data: IPieChartConfig = { apiEndpoint: '', options: undefined };
-  private oldTag: any = {};
   tag: any = {};
   defaultEdit: boolean = true;
   readonly onConfirm: () => Promise<void>;
@@ -65,7 +64,6 @@ export default class ScomPieChart extends Module {
   }
 
   private async setData(data: IPieChartConfig) {
-    this._oldData = this._data;
     this._data = data;
     this.updateChartData();
   }
@@ -225,18 +223,18 @@ export default class ScomPieChart extends Module {
         name: 'Settings',
         icon: 'cog',
         command: (builder: any, userInputData: any) => {
+          let _oldData: IPieChartConfig = { apiEndpoint: '', options: undefined };
           return {
             execute: async () => {
-              if (builder?.setData) {
-                builder.setData(userInputData);
-              }
-              this.setData(userInputData);
+              _oldData = {...this._data};
+              if (userInputData?.apiEndpoint !== undefined) this._data.apiEndpoint = userInputData.apiEndpoint;
+              if (userInputData?.options !== undefined) this._data.options = userInputData.options;
+              if (builder?.setData) builder.setData(userInputData);
+              this.setData(this._data);
             },
             undo: () => {
-              if (builder?.setData) {
-                builder.setData(this._oldData);
-              }
-              this.setData(this._oldData);
+              if (builder?.setData) builder.setData(_oldData);
+              this.setData(_oldData);
             },
             redo: () => { }
           }
@@ -274,17 +272,19 @@ export default class ScomPieChart extends Module {
         name: 'Theme Settings',
         icon: 'palette',
         command: (builder: any, userInputData: any) => {
+          let oldTag = {};
           return {
             execute: async () => {
               if (!userInputData) return;
-              this.oldTag = JSON.parse(JSON.stringify(this.tag));
-              this.setTag(userInputData);
+              oldTag = {...this.tag}
               if (builder) builder.setTag(userInputData);
+              else this.setTag(userInputData);
             },
             undo: () => {
               if (!userInputData) return;
-              this.setTag(this.oldTag);
-              if (builder) builder.setTag(this.oldTag);
+              this.tag = {...oldTag};
+              if (builder) builder.setTag(oldTag);
+              else this.setTag(oldTag);
             },
             redo: () => { }
           }
@@ -304,7 +304,10 @@ export default class ScomPieChart extends Module {
           return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
         },
         getData: this.getData.bind(this),
-        setData: this.setData.bind(this),
+        setData: async (data: IPieChartConfig) => {
+          const defaultData = dataJson.defaultBuilderData;
+          await this.setData({...defaultData, ...data});
+        },
         getTag: this.getTag.bind(this),
         setTag: this.setTag.bind(this)
       },
@@ -361,7 +364,7 @@ export default class ScomPieChart extends Module {
   }
 
   private renderChart() {
-    if (!this.pnlPieChart && this._data.options) return;
+    if ((!this.pnlPieChart && this._data.options) || !this._data.options) return;
     const { title, description, options } = this._data.options;
     this.lbTitle.caption = title;
     this.lbDescription.caption = description;
