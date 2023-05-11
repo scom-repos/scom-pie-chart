@@ -70,6 +70,29 @@ declare module "@scom/scom-pie-chart/assets.ts" {
     };
     export default _default;
 }
+/// <amd-module name="@scom/scom-pie-chart/data.json.ts" />
+declare module "@scom/scom-pie-chart/data.json.ts" {
+    const _default_1: {
+        defaultBuilderData: {
+            apiEndpoint: string;
+            options: {
+                title: string;
+                options: {
+                    xColumn: string;
+                    yColumn: string;
+                    serieName: string;
+                    numberFormat: string;
+                    showDataLabels: boolean;
+                    valuesOptions: {
+                        name: string;
+                        color: string;
+                    }[];
+                };
+            };
+        };
+    };
+    export default _default_1;
+}
 /// <amd-module name="@scom/scom-pie-chart" />
 declare module "@scom/scom-pie-chart" {
     import { Module, ControlElement, Container, IDataSchema } from '@ijstech/components';
@@ -93,9 +116,7 @@ declare module "@scom/scom-pie-chart" {
         private lbDescription;
         private pieChartData;
         private apiEndpoint;
-        private _oldData;
         private _data;
-        private oldTag;
         tag: any;
         defaultEdit: boolean;
         readonly onConfirm: () => Promise<void>;
