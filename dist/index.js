@@ -143,7 +143,7 @@ define("@scom/scom-pie-chart/data.json.ts", ["require", "exports"], function (re
     ///<amd-module name='@scom/scom-pie-chart/data.json.ts'/> 
     exports.default = {
         "defaultBuilderData": {
-            "apiEndpoint": "https://api.dune.com/api/v1/query/2030664/results?api_key=GZ0R7Jim7TWLY7umXitxtiswiaD4eM7j",
+            "apiEndpoint": "/dune/query/2030664",
             "options": {
                 "title": "Ethereum Beacon Chain Deposits Entity",
                 "options": {
