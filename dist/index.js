@@ -408,7 +408,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                                 if (!userInputData)
                                     return;
                                 oldTag = Object.assign({}, this.tag);
-                                if (builder)
+                                if (builder === null || builder === void 0 ? void 0 : builder.setTag)
                                     builder.setTag(userInputData);
                                 else
                                     this.setTag(userInputData);
@@ -417,7 +417,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                                 if (!userInputData)
                                     return;
                                 this.tag = Object.assign({}, oldTag);
-                                if (builder)
+                                if (builder === null || builder === void 0 ? void 0 : builder.setTag)
                                     builder.setTag(oldTag);
                                 else
                                     this.setTag(oldTag);

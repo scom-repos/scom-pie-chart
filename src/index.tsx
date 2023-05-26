@@ -277,13 +277,13 @@ export default class ScomPieChart extends Module {
             execute: async () => {
               if (!userInputData) return;
               oldTag = {...this.tag}
-              if (builder) builder.setTag(userInputData);
+              if (builder?.setTag) builder.setTag(userInputData);
               else this.setTag(userInputData);
             },
             undo: () => {
               if (!userInputData) return;
               this.tag = {...oldTag};
-              if (builder) builder.setTag(oldTag);
+              if (builder?.setTag) builder.setTag(oldTag);
               else this.setTag(oldTag);
             },
             redo: () => { }
