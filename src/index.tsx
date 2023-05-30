@@ -12,11 +12,69 @@ import {
   Panel,
   PieChart
 } from '@ijstech/components';
-import { IPieChartConfig, callAPI, formatNumberByFormat } from './global/index';
+import { IPieChartConfig, IPieChartOptions, callAPI, formatNumberByFormat } from './global/index';
 import { chartStyle, containerStyle } from './index.css';
 import assets from './assets';
 import dataJson from './data.json';
 const Theme = Styles.Theme.ThemeVars;
+
+const options = {
+  type: 'object',
+  properties: {
+    xColumn: {
+      type: 'string',
+      title: 'X column',
+      required: true
+    },
+    yColumn: {
+      type: 'string',
+      title: 'Y column',
+      required: true
+    },
+    serieName: {
+      type: 'string'
+    },
+    numberFormat: {
+      type: 'string'
+    },
+    legend: {
+      type: 'object',
+      title: 'Show Chart Legend',
+      properties: {
+        show: {
+          type: 'boolean'
+        },
+        scroll: {
+          type: 'boolean'
+        },
+        position: {
+          type: 'string',
+          enum: ['top', 'bottom', 'left', 'right']
+        }
+      }
+    },
+    showDataLabels: {
+      type: 'boolean'
+    },
+    valuesOptions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            required: true
+          },
+          color: {
+            type: 'string',
+            format: 'color',
+            required: true
+          }
+        }
+      }
+    }
+  }
+}
 
 interface ScomPieChartElement extends ControlElement {
   data: IPieChartConfig
@@ -42,7 +100,7 @@ export default class ScomPieChart extends Module {
   private pieChartData: { [key: string]: string | number }[] = [];
   private apiEndpoint = '';
 
-  private _data: IPieChartConfig = { apiEndpoint: '', options: undefined };
+  private _data: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined };
   tag: any = {};
   defaultEdit: boolean = true;
   readonly onConfirm: () => Promise<void>;
@@ -84,31 +142,7 @@ export default class ScomPieChart extends Module {
     this.onUpdateBlock();
   }
 
-  // getConfigSchema() {
-  //   return this.getThemeSchema();
-  // }
-
-  // onConfigSave(config: any) {
-  //   this.tag = config;
-  //   this.onUpdateBlock();
-  // }
-
-  // async edit() {
-  //   // this.pieChartContainer.visible = false
-  // }
-
-  // async confirm() {
-  //   this.onUpdateBlock();
-  //   // this.pieChartContainer.visible = true
-  // }
-
-  // async discard() {
-  //   // this.pieChartContainer.visible = true
-  // }
-
-  // async config() { }
-
-  private getPropertiesSchema(readOnly?: boolean) {
+  private getPropertiesSchema() {
     const propertiesSchema = {
       type: 'object',
       properties: {
@@ -117,81 +151,48 @@ export default class ScomPieChart extends Module {
           title: 'API Endpoint',
           required: true
         },
-        options: {
-          type: 'object',
-          properties: {
-            title: {
-              type: 'string',
-              required: true
-            },
-            description: {
-              type: 'string'
-            },
-            options: {
-              type: 'object',
-              properties: {
-                xColumn: {
-                  type: 'string',
-                  title: 'X column',
-                  required: true
-                },
-                yColumn: {
-                  type: 'string',
-                  title: 'Y column',
-                  required: true
-                },
-                serieName: {
-                  type: 'string'
-                },
-                numberFormat: {
-                  type: 'string'
-                },
-                legend: {
-                  type: 'object',
-                  title: 'Show Chart Legend',
-                  properties: {
-                    show: {
-                      type: 'boolean'
-                    },
-                    scroll: {
-                      type: 'boolean'
-                    },
-                    position: {
-                      type: 'string',
-                      enum: ['top', 'bottom', 'left', 'right']
-                    }
-                  }
-                },
-                showDataLabels: {
-                  type: 'boolean'
-                },
-                valuesOptions: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      name: {
-                        type: 'string',
-                        required: true
-                      },
-                      color: {
-                        type: 'string',
-                        format: 'color',
-                        required: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+        title: {
+          type: 'string',
+          required: true
+        },
+        description: {
+          type: 'string'
         }
       }
     }
-    return propertiesSchema as any;
+    return propertiesSchema as IDataSchema;
   }
 
-  private getThemeSchema(readOnly?: boolean) {
+  private getGeneralSchema() {
+    const propertiesSchema = {
+      type: 'object',
+      required: ['apiEndpoint', 'title'],
+      properties: {
+        apiEndpoint: {
+          type: 'string'
+        },
+        title: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        }
+      }
+    }
+    return propertiesSchema as IDataSchema;
+  }
+
+  private getAdvanceSchema() {
+    const propertiesSchema = {
+      type: 'object',
+      properties: {
+        options
+      }
+    };
+    return propertiesSchema as IDataSchema;
+  }
+
+  private getThemeSchema() {
     const themeSchema = {
       type: 'object',
       properties: {
@@ -217,22 +218,28 @@ export default class ScomPieChart extends Module {
     return themeSchema as IDataSchema;
   }
 
-  private _getActions(propertiesSchema: IDataSchema, themeSchema: IDataSchema) {
+  private _getActions(propertiesSchema: IDataSchema, themeSchema: IDataSchema, advancedSchema?: IDataSchema) {
     const actions = [
       {
         name: 'Settings',
         icon: 'cog',
         command: (builder: any, userInputData: any) => {
-          let _oldData: IPieChartConfig = { apiEndpoint: '', options: undefined };
+          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined };
           return {
             execute: async () => {
-              _oldData = {...this._data};
-              if (userInputData?.apiEndpoint !== undefined) this._data.apiEndpoint = userInputData.apiEndpoint;
-              if (userInputData?.options !== undefined) this._data.options = userInputData.options;
+              _oldData = { ...this._data };
+              if (userInputData) {
+                if (advancedSchema) {
+                  this._data = { ...this._data, ...userInputData };
+                } else {
+                  this._data = { ...userInputData };
+                }
+              }
               if (builder?.setData) builder.setData(userInputData);
               this.setData(this._data);
             },
             undo: () => {
+              if (advancedSchema) _oldData = { ..._oldData, options: this._data.options };
               if (builder?.setData) builder.setData(_oldData);
               this.setData(_oldData);
             },
@@ -240,7 +247,7 @@ export default class ScomPieChart extends Module {
           }
         },
         userInputDataSchema: propertiesSchema,
-        userInputUISchema: {
+        userInputUISchema: advancedSchema ? undefined : {
           type: 'VerticalLayout',
           elements: [
             {
@@ -250,15 +257,15 @@ export default class ScomPieChart extends Module {
             },
             {
               type: 'Control',
-              scope: '#/properties/options/properties/title'
+              scope: '#/properties/title'
             },
             {
               type: 'Control',
-              scope: '#/properties/options/properties/description'
+              scope: '#/properties/description'
             },
             {
               type: 'Control',
-              scope: '#/properties/options/properties/options',
+              scope: '#/properties/options',
               options: {
                 detail: {
                   type: 'VerticalLayout'
@@ -276,13 +283,13 @@ export default class ScomPieChart extends Module {
           return {
             execute: async () => {
               if (!userInputData) return;
-              oldTag = {...this.tag}
+              oldTag = JSON.parse(JSON.stringify(this.tag));
               if (builder?.setTag) builder.setTag(userInputData);
               else this.setTag(userInputData);
             },
             undo: () => {
               if (!userInputData) return;
-              this.tag = {...oldTag};
+              this.tag = JSON.parse(JSON.stringify(oldTag));
               if (builder?.setTag) builder.setTag(oldTag);
               else this.setTag(oldTag);
             },
@@ -292,6 +299,45 @@ export default class ScomPieChart extends Module {
         userInputDataSchema: themeSchema
       }
     ]
+    if (advancedSchema) {
+      const advanced = {
+        name: 'Advanced',
+        icon: 'sliders-h',
+        command: (builder: any, userInputData: any) => {
+          let _oldData: IPieChartOptions = { };
+          return {
+            execute: async () => {
+              _oldData = { ...this._data?.options };
+              if (userInputData?.options !== undefined) this._data.options = userInputData.options;
+              if (builder?.setData) builder.setData(this._data);
+              this.setData(this._data);
+            },
+            undo: () => {
+              this._data.options = { ..._oldData };
+              if (builder?.setData) builder.setData(this._data);
+              this.setData(this._data);
+            },
+            redo: () => { }
+          }
+        },
+        userInputDataSchema: advancedSchema,
+        userInputUISchema: {
+          type: 'VerticalLayout',
+          elements: [
+            {
+              type: 'Control',
+              scope: '#/properties/options',
+              options: {
+                detail: {
+                  type: 'VerticalLayout'
+                }
+              }
+            }
+          ]
+        }
+      }
+      actions.push(advanced);
+    }
     return actions
   }
 
@@ -302,12 +348,12 @@ export default class ScomPieChart extends Module {
         name: 'Builder Configurator',
         target: 'Builders',
         getActions: () => {
-          return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
+          return this._getActions(this.getGeneralSchema(), this.getThemeSchema(), this.getAdvanceSchema());
         },
         getData: this.getData.bind(this),
         setData: async (data: IPieChartConfig) => {
           const defaultData = dataJson.defaultBuilderData;
-          await this.setData({...defaultData, ...data});
+          await this.setData({ ...defaultData, ...data });
         },
         getTag: this.getTag.bind(this),
         setTag: this.setTag.bind(this)
@@ -316,7 +362,7 @@ export default class ScomPieChart extends Module {
         name: 'Emdedder Configurator',
         target: 'Embedders',
         getActions: () => {
-          return this._getActions(this.getPropertiesSchema(true), this.getThemeSchema(true))
+          return this._getActions(this.getPropertiesSchema(), this.getThemeSchema())
         },
         getLinkParams: () => {
           const data = this._data || {};
@@ -384,7 +430,7 @@ export default class ScomPieChart extends Module {
 
   private renderChart() {
     if ((!this.pnlPieChart && this._data.options) || !this._data.options) return;
-    const { title, description, options } = this._data.options;
+    const { title, description, options } = this._data;
     this.lbTitle.caption = title;
     this.lbDescription.caption = description;
     this.lbDescription.visible = !!description;
