@@ -302,7 +302,7 @@ export default class ScomPieChart extends Module {
     if (advancedSchema) {
       const advanced = {
         name: 'Advanced',
-        icon: 'cog',
+        icon: 'sliders-h',
         command: (builder: any, userInputData: any) => {
           let _oldData: IPieChartOptions = { };
           return {
