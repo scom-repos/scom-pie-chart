@@ -1,27 +1,25 @@
 /// <amd-module name="@scom/scom-pie-chart/global/interfaces.ts" />
 declare module "@scom/scom-pie-chart/global/interfaces.ts" {
     export interface IPieChartOptions {
-        title: string;
-        description?: string;
-        options: {
-            xColumn: string;
-            yColumn: string;
-            serieName?: string;
-            legend?: {
-                show?: boolean;
-                scroll?: boolean;
-                position?: 'top' | 'bottom' | 'left' | 'right';
-            };
-            showDataLabels?: boolean;
-            numberFormat?: string;
-            valuesOptions?: {
-                name: string;
-                color: string;
-            }[];
+        xColumn?: string;
+        yColumn?: string;
+        serieName?: string;
+        legend?: {
+            show?: boolean;
+            scroll?: boolean;
+            position?: 'top' | 'bottom' | 'left' | 'right';
         };
+        showDataLabels?: boolean;
+        numberFormat?: string;
+        valuesOptions?: {
+            name: string;
+            color: string;
+        }[];
     }
     export interface IPieChartConfig {
         apiEndpoint: string;
+        title: string;
+        description?: string;
         options: IPieChartOptions;
     }
 }
@@ -75,19 +73,17 @@ declare module "@scom/scom-pie-chart/data.json.ts" {
     const _default_1: {
         defaultBuilderData: {
             apiEndpoint: string;
+            title: string;
             options: {
-                title: string;
-                options: {
-                    xColumn: string;
-                    yColumn: string;
-                    serieName: string;
-                    numberFormat: string;
-                    showDataLabels: boolean;
-                    valuesOptions: {
-                        name: string;
-                        color: string;
-                    }[];
-                };
+                xColumn: string;
+                yColumn: string;
+                serieName: string;
+                numberFormat: string;
+                showDataLabels: boolean;
+                valuesOptions: {
+                    name: string;
+                    color: string;
+                }[];
             };
         };
     };
@@ -129,6 +125,8 @@ declare module "@scom/scom-pie-chart" {
         private getTag;
         private setTag;
         private getPropertiesSchema;
+        private getGeneralSchema;
+        private getAdvanceSchema;
         private getThemeSchema;
         private _getActions;
         getConfigurators(): ({
