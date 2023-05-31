@@ -142,7 +142,7 @@ export default class ScomPieChart extends Module {
     this.onUpdateBlock();
   }
 
-  private getPropertiesSchema() {
+  private getEmbeddersJSONSchema() {
     const propertiesSchema = {
       type: 'object',
       properties: {
@@ -157,7 +157,8 @@ export default class ScomPieChart extends Module {
         },
         description: {
           type: 'string'
-        }
+        },
+        options
       }
     }
     return propertiesSchema as IDataSchema;
@@ -359,10 +360,10 @@ export default class ScomPieChart extends Module {
         setTag: this.setTag.bind(this)
       },
       {
-        name: 'Emdedder Configurator',
+        name: 'Embedder Configurator',
         target: 'Embedders',
         getActions: () => {
-          return this._getActions(this.getPropertiesSchema(), this.getThemeSchema())
+          return this._getActions(this.getEmbeddersJSONSchema(), this.getThemeSchema())
         },
         getLinkParams: () => {
           const data = this._data || {};

@@ -273,7 +273,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.height = this.tag.height || 500;
             this.onUpdateBlock();
         }
-        getPropertiesSchema() {
+        getEmbeddersJSONSchema() {
             const propertiesSchema = {
                 type: 'object',
                 properties: {
@@ -288,7 +288,8 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     },
                     description: {
                         type: 'string'
-                    }
+                    },
+                    options
                 }
             };
             return propertiesSchema;
@@ -415,7 +416,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                             execute: async () => {
                                 if (!userInputData)
                                     return;
-                                oldTag = Object.assign({}, this.tag);
+                                oldTag = JSON.parse(JSON.stringify(this.tag));
                                 if (builder === null || builder === void 0 ? void 0 : builder.setTag)
                                     builder.setTag(userInputData);
                                 else
@@ -424,7 +425,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                             undo: () => {
                                 if (!userInputData)
                                     return;
-                                this.tag = Object.assign({}, oldTag);
+                                this.tag = JSON.parse(JSON.stringify(oldTag));
                                 if (builder === null || builder === void 0 ? void 0 : builder.setTag)
                                     builder.setTag(oldTag);
                                 else
@@ -499,10 +500,10 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     setTag: this.setTag.bind(this)
                 },
                 {
-                    name: 'Emdedder Configurator',
+                    name: 'Embedder Configurator',
                     target: 'Embedders',
                     getActions: () => {
-                        return this._getActions(this.getPropertiesSchema(), this.getThemeSchema());
+                        return this._getActions(this.getEmbeddersJSONSchema(), this.getThemeSchema());
                     },
                     getLinkParams: () => {
                         const data = this._data || {};

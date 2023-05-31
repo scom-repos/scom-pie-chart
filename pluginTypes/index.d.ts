@@ -124,7 +124,7 @@ declare module "@scom/scom-pie-chart" {
         private setData;
         private getTag;
         private setTag;
-        private getPropertiesSchema;
+        private getEmbeddersJSONSchema;
         private getGeneralSchema;
         private getAdvanceSchema;
         private getThemeSchema;
