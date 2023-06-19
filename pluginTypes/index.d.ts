@@ -94,6 +94,7 @@ declare module "@scom/scom-pie-chart" {
     import { Module, ControlElement, Container, IDataSchema } from '@ijstech/components';
     import { IPieChartConfig } from "@scom/scom-pie-chart/global/index.ts";
     interface ScomPieChartElement extends ControlElement {
+        lazyLoad?: boolean;
         data: IPieChartConfig;
     }
     global {
