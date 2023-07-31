@@ -15,9 +15,19 @@ export interface IPieChartOptions {
   }[]
 }
 
+export enum ModeType {
+  LIVE = 'Live',
+  SNAPSHOT = 'Snapshot'
+}
+
 export interface IPieChartConfig {
   apiEndpoint: string,
   title: string,
   description?: string,
-  options: IPieChartOptions
+  options: IPieChartOptions,
+  file?: {
+    cid?: string,
+    name?: string
+  },
+  mode?: ModeType
 }
