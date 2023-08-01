@@ -1,5 +1,6 @@
 /// <amd-module name="@scom/scom-pie-chart/global/interfaces.ts" />
 declare module "@scom/scom-pie-chart/global/interfaces.ts" {
+    import { ModeType } from "@scom/scom-chart-data-source-setup";
     export interface IPieChartOptions {
         xColumn?: string;
         yColumn?: string;
@@ -16,20 +17,16 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
             color: string;
         }[];
     }
-    export enum ModeType {
-        LIVE = "Live",
-        SNAPSHOT = "Snapshot"
-    }
     export interface IPieChartConfig {
-        apiEndpoint: string;
+        apiEndpoint?: string;
         title: string;
         description?: string;
         options: IPieChartOptions;
         file?: {
-            cid?: string;
-            name?: string;
+            cid: string;
+            name: string;
         };
-        mode?: ModeType;
+        mode: ModeType;
     }
 }
 /// <amd-module name="@scom/scom-pie-chart/global/utils.ts" />
@@ -42,7 +39,6 @@ declare module "@scom/scom-pie-chart/global/utils.ts" {
     export const formatNumberByFormat: (num: number, format: string, separators?: boolean) => any;
     export const formatNumberWithSeparators: (value: number, precision?: number) => string;
     export const callAPI: (apiEndpoint: string) => Promise<any>;
-    export const fetchDataByCid: (ipfsCid: string) => Promise<any>;
 }
 /// <amd-module name="@scom/scom-pie-chart/global/index.ts" />
 declare module "@scom/scom-pie-chart/global/index.ts" {
