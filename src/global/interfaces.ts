@@ -1,3 +1,5 @@
+import { ModeType } from "@scom/scom-chart-data-source-setup"
+
 export interface IPieChartOptions {
   xColumn?: string,
   yColumn?: string,
@@ -15,19 +17,14 @@ export interface IPieChartOptions {
   }[]
 }
 
-export enum ModeType {
-  LIVE = 'Live',
-  SNAPSHOT = 'Snapshot'
-}
-
 export interface IPieChartConfig {
-  apiEndpoint: string,
+  apiEndpoint?: string,
   title: string,
   description?: string,
   options: IPieChartOptions,
   file?: {
-    cid?: string,
-    name?: string
+    cid: string,
+    name: string
   },
-  mode?: ModeType
+  mode: ModeType
 }

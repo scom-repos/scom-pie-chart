@@ -13,11 +13,11 @@ import {
   PieChart,
   Button
 } from '@ijstech/components';
-import { IPieChartConfig, IPieChartOptions, ModeType, callAPI, fetchDataByCid, formatNumberByFormat } from './global/index';
+import { IPieChartConfig, IPieChartOptions, callAPI, formatNumberByFormat } from './global/index';
 import { chartStyle, containerStyle } from './index.css';
 import assets from './assets';
 import dataJson from './data.json';
-import ScomChartDataSourceSetup from '@scom/scom-chart-data-source-setup';
+import ScomChartDataSourceSetup, { fetchContentByCID, ModeType } from '@scom/scom-chart-data-source-setup';
 const Theme = Styles.Theme.ThemeVars;
 const currentTheme = Styles.Theme.currentTheme;
 
@@ -104,7 +104,7 @@ export default class ScomPieChart extends Module {
   private pieChartData: { [key: string]: string | number }[] = [];
   private apiEndpoint = '';
 
-  private _data: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined };
+  private _data: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined, mode: ModeType.LIVE };
   tag: any = {};
   defaultEdit: boolean = true;
   readonly onConfirm: () => Promise<void>;
@@ -229,7 +229,7 @@ export default class ScomPieChart extends Module {
         name: 'Data Source',
         icon: 'database',
         command: (builder: any, userInputData: any) => {
-          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined };
+          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined, mode: ModeType.LIVE };
           return {
             execute: async () => {
               _oldData = { ...this._data };
@@ -286,7 +286,7 @@ export default class ScomPieChart extends Module {
         name: 'Settings',
         icon: 'cog',
         command: (builder: any, userInputData: any) => {
-          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined };
+          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined, mode: ModeType.LIVE };
           return {
             execute: async () => {
               _oldData = { ...this._data };
@@ -480,7 +480,7 @@ export default class ScomPieChart extends Module {
 
   private async renderSnapshotData() {
     if (this._data.file?.cid) {
-      const data = await fetchDataByCid(this._data.file.cid);
+      const data = await fetchContentByCID(this._data.file.cid);
       if (data) {
         this.pieChartData = data;
         this.onUpdateBlock();
