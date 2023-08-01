@@ -21,11 +21,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define("@scom/scom-pie-chart/global/interfaces.ts", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ModeType = void 0;
+    var ModeType;
+    (function (ModeType) {
+        ModeType["LIVE"] = "Live";
+        ModeType["SNAPSHOT"] = "Snapshot";
+    })(ModeType = exports.ModeType || (exports.ModeType = {}));
 });
 define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.callAPI = exports.formatNumberWithSeparators = exports.formatNumberByFormat = exports.formatNumber = void 0;
+    exports.fetchDataByCid = exports.callAPI = exports.formatNumberWithSeparators = exports.formatNumberByFormat = exports.formatNumber = void 0;
     ///<amd-module name='@scom/scom-pie-chart/global/utils.ts'/> 
     const formatNumber = (num, options) => {
         if (num === null)
@@ -105,6 +111,23 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports"], function 
         return [];
     };
     exports.callAPI = callAPI;
+    const _fetchFileContentByCID = async (ipfsCid) => {
+        let res;
+        try {
+            // const ipfsBaseUrl = `${window.location.origin}/ipfs/`;
+            const ipfsBaseUrl = `https://ipfs.scom.dev/ipfs/`;
+            res = await fetch(ipfsBaseUrl + ipfsCid);
+        }
+        catch (err) {
+        }
+        return res;
+    };
+    const fetchDataByCid = async (ipfsCid) => {
+        const res = await _fetchFileContentByCID(ipfsCid);
+        const content = await res.json();
+        return content;
+    };
+    exports.fetchDataByCid = fetchDataByCid;
 });
 define("@scom/scom-pie-chart/global/index.ts", ["require", "exports", "@scom/scom-pie-chart/global/interfaces.ts", "@scom/scom-pie-chart/global/utils.ts"], function (require, exports, interfaces_1, utils_1) {
     "use strict";
@@ -181,7 +204,7 @@ define("@scom/scom-pie-chart/data.json.ts", ["require", "exports"], function (re
         }
     };
 });
-define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@scom/scom-pie-chart/global/index.ts", "@scom/scom-pie-chart/index.css.ts", "@scom/scom-pie-chart/assets.ts", "@scom/scom-pie-chart/data.json.ts"], function (require, exports, components_3, index_1, index_css_1, assets_1, data_json_1) {
+define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@scom/scom-pie-chart/global/index.ts", "@scom/scom-pie-chart/index.css.ts", "@scom/scom-pie-chart/assets.ts", "@scom/scom-pie-chart/data.json.ts", "@scom/scom-chart-data-source-setup"], function (require, exports, components_3, index_1, index_css_1, assets_1, data_json_1, scom_chart_data_source_setup_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_3.Styles.Theme.ThemeVars;
@@ -302,11 +325,11 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
         getGeneralSchema() {
             const propertiesSchema = {
                 type: 'object',
-                required: ['apiEndpoint', 'title'],
+                required: ['title'],
                 properties: {
-                    apiEndpoint: {
-                        type: 'string'
-                    },
+                    // apiEndpoint: {
+                    //   type: 'string'
+                    // },
                     title: {
                         type: 'string'
                     },
@@ -354,6 +377,71 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
         _getActions(propertiesSchema, themeSchema, advancedSchema) {
             const actions = [
                 {
+                    name: 'Data Source',
+                    icon: 'database',
+                    command: (builder, userInputData) => {
+                        let _oldData = { apiEndpoint: '', title: '', options: undefined };
+                        return {
+                            execute: async () => {
+                                _oldData = Object.assign({}, this._data);
+                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.mode)
+                                    this._data.mode = userInputData === null || userInputData === void 0 ? void 0 : userInputData.mode;
+                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.file)
+                                    this._data.file = userInputData === null || userInputData === void 0 ? void 0 : userInputData.file;
+                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.apiEndpoint)
+                                    this._data.apiEndpoint = userInputData === null || userInputData === void 0 ? void 0 : userInputData.apiEndpoint;
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(this._data);
+                                this.setData(this._data);
+                            },
+                            undo: () => {
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(_oldData);
+                                this.setData(_oldData);
+                            },
+                            redo: () => { }
+                        };
+                    },
+                    customUI: {
+                        render: (data, onConfirm) => {
+                            const vstack = new components_3.VStack(null, { gap: '1rem' });
+                            const config = new scom_chart_data_source_setup_1.default(null, Object.assign(Object.assign({}, this._data), { chartData: JSON.stringify(this.pieChartData) }));
+                            const hstack = new components_3.HStack(null, {
+                                verticalAlignment: 'center',
+                                horizontalAlignment: 'end'
+                            });
+                            const button = new components_3.Button(null, {
+                                caption: 'Confirm',
+                                width: 'auto',
+                                height: 40,
+                                font: { color: Theme.colors.primary.contrastText }
+                            });
+                            hstack.append(button);
+                            vstack.append(config);
+                            vstack.append(hstack);
+                            button.onClick = async () => {
+                                const { apiEndpoint, file, mode } = config.data;
+                                if (mode === 'Live') {
+                                    if (!apiEndpoint)
+                                        return;
+                                    this._data.apiEndpoint = apiEndpoint;
+                                    this.updateChartData();
+                                }
+                                else {
+                                    if (!(file === null || file === void 0 ? void 0 : file.cid))
+                                        return;
+                                    this.pieChartData = config.data.chartData ? JSON.parse(config.data.chartData) : [];
+                                    this.onUpdateBlock();
+                                }
+                                if (onConfirm) {
+                                    onConfirm(true, Object.assign(Object.assign({}, this._data), { apiEndpoint, file, mode }));
+                                }
+                            };
+                            return vstack;
+                        }
+                    }
+                },
+                {
                     name: 'Settings',
                     icon: 'cog',
                     command: (builder, userInputData) => {
@@ -387,11 +475,11 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     userInputUISchema: advancedSchema ? undefined : {
                         type: 'VerticalLayout',
                         elements: [
-                            {
-                                type: 'Control',
-                                scope: '#/properties/apiEndpoint',
-                                title: 'API Endpoint'
-                            },
+                            // {
+                            //   type: 'Control',
+                            //   scope: '#/properties/apiEndpoint',
+                            //   title: 'API Endpoint'
+                            // },
                             {
                                 type: 'Control',
                                 scope: '#/properties/title'
@@ -548,6 +636,28 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.updateTheme();
         }
         async updateChartData() {
+            var _a;
+            this.loadingElm.visible = true;
+            if (((_a = this._data) === null || _a === void 0 ? void 0 : _a.mode) === index_1.ModeType.SNAPSHOT)
+                await this.renderSnapshotData();
+            else
+                await this.renderLiveData();
+            this.loadingElm.visible = false;
+        }
+        async renderSnapshotData() {
+            var _a;
+            if ((_a = this._data.file) === null || _a === void 0 ? void 0 : _a.cid) {
+                const data = await (0, index_1.fetchDataByCid)(this._data.file.cid);
+                if (data) {
+                    this.pieChartData = data;
+                    this.onUpdateBlock();
+                    return;
+                }
+            }
+            this.pieChartData = [];
+            this.onUpdateBlock();
+        }
+        async renderLiveData() {
             if (this._data.apiEndpoint === this.apiEndpoint) {
                 this.onUpdateBlock();
                 return;
@@ -555,14 +665,16 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             const apiEndpoint = this._data.apiEndpoint;
             this.apiEndpoint = apiEndpoint;
             if (apiEndpoint) {
-                this.loadingElm.visible = true;
-                const data = await (0, index_1.callAPI)(apiEndpoint);
-                this.loadingElm.visible = false;
-                if (data && this._data.apiEndpoint === apiEndpoint) {
-                    this.pieChartData = data;
-                    this.onUpdateBlock();
-                    return;
+                let data = null;
+                try {
+                    data = await (0, index_1.callAPI)(apiEndpoint);
+                    if (data && this._data.apiEndpoint === apiEndpoint) {
+                        this.pieChartData = data;
+                        this.onUpdateBlock();
+                        return;
+                    }
                 }
+                catch (_a) { }
             }
             this.pieChartData = [];
             this.onUpdateBlock();

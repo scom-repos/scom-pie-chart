@@ -16,11 +16,20 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
             color: string;
         }[];
     }
+    export enum ModeType {
+        LIVE = "Live",
+        SNAPSHOT = "Snapshot"
+    }
     export interface IPieChartConfig {
         apiEndpoint: string;
         title: string;
         description?: string;
         options: IPieChartOptions;
+        file?: {
+            cid?: string;
+            name?: string;
+        };
+        mode?: ModeType;
     }
 }
 /// <amd-module name="@scom/scom-pie-chart/global/utils.ts" />
@@ -33,6 +42,7 @@ declare module "@scom/scom-pie-chart/global/utils.ts" {
     export const formatNumberByFormat: (num: number, format: string, separators?: boolean) => any;
     export const formatNumberWithSeparators: (value: number, precision?: number) => string;
     export const callAPI: (apiEndpoint: string) => Promise<any>;
+    export const fetchDataByCid: (ipfsCid: string) => Promise<any>;
 }
 /// <amd-module name="@scom/scom-pie-chart/global/index.ts" />
 declare module "@scom/scom-pie-chart/global/index.ts" {
@@ -91,7 +101,7 @@ declare module "@scom/scom-pie-chart/data.json.ts" {
 }
 /// <amd-module name="@scom/scom-pie-chart" />
 declare module "@scom/scom-pie-chart" {
-    import { Module, ControlElement, Container, IDataSchema } from '@ijstech/components';
+    import { Module, ControlElement, Container, IDataSchema, VStack } from '@ijstech/components';
     import { IPieChartConfig } from "@scom/scom-pie-chart/global/index.ts";
     interface ScomPieChartElement extends ControlElement {
         lazyLoad?: boolean;
@@ -141,30 +151,11 @@ declare module "@scom/scom-pie-chart" {
                     undo: () => void;
                     redo: () => void;
                 };
-                userInputDataSchema: IDataSchema;
-                userInputUISchema: {
-                    type: string;
-                    elements: ({
-                        type: string;
-                        scope: string;
-                        title: string;
-                        options?: undefined;
-                    } | {
-                        type: string;
-                        scope: string;
-                        title?: undefined;
-                        options?: undefined;
-                    } | {
-                        type: string;
-                        scope: string;
-                        options: {
-                            detail: {
-                                type: string;
-                            };
-                        };
-                        title?: undefined;
-                    })[];
+                customUI: {
+                    render: (data?: any, onConfirm?: (result: boolean, data: any) => void) => VStack;
                 };
+                userInputDataSchema?: undefined;
+                userInputUISchema?: undefined;
             } | {
                 name: string;
                 icon: string;
@@ -174,6 +165,33 @@ declare module "@scom/scom-pie-chart" {
                     redo: () => void;
                 };
                 userInputDataSchema: IDataSchema;
+                userInputUISchema: {
+                    type: string;
+                    elements: ({
+                        type: string;
+                        scope: string;
+                        options?: undefined;
+                    } | {
+                        type: string;
+                        scope: string;
+                        options: {
+                            detail: {
+                                type: string;
+                            };
+                        };
+                    })[];
+                };
+                customUI?: undefined;
+            } | {
+                name: string;
+                icon: string;
+                command: (builder: any, userInputData: any) => {
+                    execute: () => Promise<void>;
+                    undo: () => void;
+                    redo: () => void;
+                };
+                userInputDataSchema: IDataSchema;
+                customUI?: undefined;
                 userInputUISchema?: undefined;
             })[];
             getData: any;
@@ -193,30 +211,11 @@ declare module "@scom/scom-pie-chart" {
                     undo: () => void;
                     redo: () => void;
                 };
-                userInputDataSchema: IDataSchema;
-                userInputUISchema: {
-                    type: string;
-                    elements: ({
-                        type: string;
-                        scope: string;
-                        title: string;
-                        options?: undefined;
-                    } | {
-                        type: string;
-                        scope: string;
-                        title?: undefined;
-                        options?: undefined;
-                    } | {
-                        type: string;
-                        scope: string;
-                        options: {
-                            detail: {
-                                type: string;
-                            };
-                        };
-                        title?: undefined;
-                    })[];
+                customUI: {
+                    render: (data?: any, onConfirm?: (result: boolean, data: any) => void) => VStack;
                 };
+                userInputDataSchema?: undefined;
+                userInputUISchema?: undefined;
             } | {
                 name: string;
                 icon: string;
@@ -226,6 +225,33 @@ declare module "@scom/scom-pie-chart" {
                     redo: () => void;
                 };
                 userInputDataSchema: IDataSchema;
+                userInputUISchema: {
+                    type: string;
+                    elements: ({
+                        type: string;
+                        scope: string;
+                        options?: undefined;
+                    } | {
+                        type: string;
+                        scope: string;
+                        options: {
+                            detail: {
+                                type: string;
+                            };
+                        };
+                    })[];
+                };
+                customUI?: undefined;
+            } | {
+                name: string;
+                icon: string;
+                command: (builder: any, userInputData: any) => {
+                    execute: () => Promise<void>;
+                    undo: () => void;
+                    redo: () => void;
+                };
+                userInputDataSchema: IDataSchema;
+                customUI?: undefined;
                 userInputUISchema?: undefined;
             })[];
             getLinkParams: () => {
@@ -241,6 +267,8 @@ declare module "@scom/scom-pie-chart" {
         private updateTheme;
         private onUpdateBlock;
         private updateChartData;
+        private renderSnapshotData;
+        private renderLiveData;
         private renderChart;
         private resizeChart;
         init(): Promise<void>;
