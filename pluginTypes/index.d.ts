@@ -118,7 +118,6 @@ declare module "@scom/scom-pie-chart" {
         private lbTitle;
         private lbDescription;
         private pieChartData;
-        private apiEndpoint;
         private _data;
         tag: any;
         defaultEdit: boolean;
