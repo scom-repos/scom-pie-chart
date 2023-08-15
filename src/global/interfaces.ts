@@ -18,7 +18,8 @@ export interface IPieChartOptions {
 }
 
 export interface IPieChartConfig {
-  apiEndpoint?: string,
+  dataSource: string;
+  queryId: string;
   title: string,
   description?: string,
   options: IPieChartOptions,

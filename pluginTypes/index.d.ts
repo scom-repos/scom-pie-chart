@@ -18,7 +18,8 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
         }[];
     }
     export interface IPieChartConfig {
-        apiEndpoint?: string;
+        dataSource: string;
+        queryId: string;
         title: string;
         description?: string;
         options: IPieChartOptions;
@@ -38,7 +39,7 @@ declare module "@scom/scom-pie-chart/global/utils.ts" {
     }) => any;
     export const formatNumberByFormat: (num: number, format: string, separators?: boolean) => any;
     export const formatNumberWithSeparators: (value: number, precision?: number) => string;
-    export const callAPI: (apiEndpoint: string) => Promise<any>;
+    export const callAPI: (dataSource: string, queryId: string) => Promise<any>;
 }
 /// <amd-module name="@scom/scom-pie-chart/global/index.ts" />
 declare module "@scom/scom-pie-chart/global/index.ts" {
@@ -78,7 +79,8 @@ declare module "@scom/scom-pie-chart/assets.ts" {
 declare module "@scom/scom-pie-chart/data.json.ts" {
     const _default_1: {
         defaultBuilderData: {
-            apiEndpoint: string;
+            dataSource: string;
+            queryId: string;
             title: string;
             options: {
                 xColumn: string;
