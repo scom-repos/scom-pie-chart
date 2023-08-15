@@ -18,66 +18,10 @@ import { chartStyle, containerStyle } from './index.css';
 import assets from './assets';
 import dataJson from './data.json';
 import ScomChartDataSourceSetup, { fetchContentByCID, ModeType } from '@scom/scom-chart-data-source-setup';
+import { getBuilderSchema, getEmbedderSchema } from './formSchema';
+import ScomPieChartDataOptionsForm from './dataOptionsForm';
 const Theme = Styles.Theme.ThemeVars;
 const currentTheme = Styles.Theme.currentTheme;
-
-const options = {
-  type: 'object',
-  properties: {
-    xColumn: {
-      type: 'string',
-      title: 'X column',
-      required: true
-    },
-    yColumn: {
-      type: 'string',
-      title: 'Y column',
-      required: true
-    },
-    serieName: {
-      type: 'string'
-    },
-    numberFormat: {
-      type: 'string'
-    },
-    legend: {
-      type: 'object',
-      title: 'Show Chart Legend',
-      properties: {
-        show: {
-          type: 'boolean'
-        },
-        scroll: {
-          type: 'boolean'
-        },
-        position: {
-          type: 'string',
-          enum: ['top', 'bottom', 'left', 'right']
-        }
-      }
-    },
-    showDataLabels: {
-      type: 'boolean'
-    },
-    valuesOptions: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          name: {
-            type: 'string',
-            required: true
-          },
-          color: {
-            type: 'string',
-            format: 'color',
-            required: true
-          }
-        }
-      }
-    }
-  }
-}
 
 interface ScomPieChartElement extends ControlElement {
   lazyLoad?: boolean;
@@ -145,137 +89,11 @@ export default class ScomPieChart extends Module {
     this.onUpdateBlock();
   }
 
-  private getEmbeddersJSONSchema() {
-    const propertiesSchema = {
-      type: 'object',
-      properties: {
-        apiEndpoint: {
-          type: 'string',
-          title: 'API Endpoint',
-          required: true
-        },
-        title: {
-          type: 'string',
-          required: true
-        },
-        description: {
-          type: 'string'
-        },
-        options
-      }
-    }
-    return propertiesSchema as any;
-  }
-
-  private getGeneralSchema() {
-    const propertiesSchema = {
-      type: 'object',
-      required: ['title'],
-      properties: {
-        // apiEndpoint: {
-        //   type: 'string'
-        // },
-        title: {
-          type: 'string'
-        },
-        description: {
-          type: 'string'
-        }
-      }
-    }
-    return propertiesSchema as IDataSchema;
-  }
-
-  private getAdvanceSchema() {
-    const propertiesSchema = {
-      type: 'object',
-      properties: {
-        options
-      }
-    };
-    return propertiesSchema as any;
-  }
-
-  private getThemeSchema() {
-    const themeSchema = {
-      type: 'object',
-      properties: {
-        darkShadow: {
-          type: 'boolean'
-        },
-        fontColor: {
-          type: 'string',
-          format: 'color'
-        },
-        backgroundColor: {
-          type: 'string',
-          format: 'color'
-        },
-        width: {
-          type: 'string'
-        },
-        height: {
-          type: 'string'
-        }
-      }
-    }
-    return themeSchema as IDataSchema;
-  }
-
   private _getActions(propertiesSchema: IDataSchema, themeSchema: IDataSchema, advancedSchema?: IDataSchema) {
+    const builderSchema = getBuilderSchema();
     const actions = [
       {
-        name: 'Data Source',
-        icon: 'database',
-        command: (builder: any, userInputData: any) => {
-          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined, mode: ModeType.LIVE };
-          return {
-            execute: async () => {
-              _oldData = { ...this._data };
-              if (userInputData?.mode) this._data.mode = userInputData?.mode;
-              if (userInputData?.file) this._data.file = userInputData?.file;
-              if (userInputData?.apiEndpoint) this._data.apiEndpoint = userInputData?.apiEndpoint;
-              if (builder?.setData) builder.setData(this._data);
-              this.setData(this._data);
-            },
-            undo: () => {
-              if (builder?.setData) builder.setData(_oldData);
-              this.setData(_oldData);
-            },
-            redo: () => { }
-          }
-        },
-        customUI: {
-          render: (data?: any, onConfirm?: (result: boolean, data: any) => void) => {
-            const vstack = new VStack(null, {gap: '1rem'});
-            const config = new ScomChartDataSourceSetup(null, {...this._data, chartData: JSON.stringify(this.pieChartData)});
-            const hstack = new HStack(null, {
-              verticalAlignment: 'center',
-              horizontalAlignment: 'end'
-            });
-            const button = new Button(null, {
-              caption: 'Confirm',
-              width: 'auto',
-              height: 40,
-              font: {color: Theme.colors.primary.contrastText}
-            });
-            hstack.append(button);
-            vstack.append(config);
-            vstack.append(hstack);
-            button.onClick = async () => {
-              const { apiEndpoint, file, mode } = config.data;
-              if (mode === ModeType.LIVE && !apiEndpoint) return;
-              if (mode === ModeType.SNAPSHOT && !file?.cid) return;
-              if (onConfirm) {
-                onConfirm(true, {...this._data, apiEndpoint, file, mode});
-              }
-            }
-            return vstack;
-          }
-        }
-      },
-      {
-        name: 'Settings',
+        name: 'General',
         icon: 'cog',
         command: (builder: any, userInputData: any) => {
           let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined, mode: ModeType.LIVE };
@@ -301,32 +119,91 @@ export default class ScomPieChart extends Module {
           }
         },
         userInputDataSchema: propertiesSchema,
-        userInputUISchema: advancedSchema ? undefined : {
-          type: 'VerticalLayout',
-          elements: [
-            // {
-            //   type: 'Control',
-            //   scope: '#/properties/apiEndpoint',
-            //   title: 'API Endpoint'
-            // },
-            {
-              type: 'Control',
-              scope: '#/properties/title'
+        userInputUISchema: advancedSchema ? undefined : builderSchema.general.uiSchema
+      },
+      {
+        name: 'Data',
+        icon: 'database',
+        command: (builder: any, userInputData: any) => {
+          let _oldData: IPieChartConfig = { apiEndpoint: '', title: '', options: undefined, mode: ModeType.LIVE };
+          return {
+            execute: async () => {
+              _oldData = { ...this._data };
+              if (userInputData?.mode) this._data.mode = userInputData?.mode;
+              if (userInputData?.file) this._data.file = userInputData?.file;
+              if (userInputData?.apiEndpoint) this._data.apiEndpoint = userInputData?.apiEndpoint;
+              if (userInputData?.options !== undefined) this._data.options = userInputData.options;
+              if (builder?.setData) builder.setData(this._data);
+              this.setData(this._data);
             },
-            {
-              type: 'Control',
-              scope: '#/properties/description'
+            undo: () => {
+              if (builder?.setData) builder.setData(_oldData);
+              this.setData(_oldData);
             },
-            {
-              type: 'Control',
-              scope: '#/properties/options',
-              options: {
-                detail: {
-                  type: 'VerticalLayout'
-                }
+            redo: () => { }
+          }
+        },
+        customUI: {
+          render: (data?: any, onConfirm?: (result: boolean, data: any) => void, onChange?: (result: boolean, data: any) => void) => {
+            const vstack = new VStack(null, {gap: '1rem'});
+            const dataSourceSetup = new ScomChartDataSourceSetup(null, {
+              ...this._data, 
+              chartData: JSON.stringify(this.pieChartData),
+              onCustomDataChanged: async (data: any) => {
+                onChange(true, {
+                  ...this._data, 
+                  ...data
+                });
+              }
+            });
+            const hstackBtnConfirm = new HStack(null, {
+              verticalAlignment: 'center',
+              horizontalAlignment: 'end'
+            });
+            const button = new Button(null, {
+              caption: 'Confirm',
+              width: 'auto',
+              height: 40,
+              font: {color: Theme.colors.primary.contrastText}
+            });
+            hstackBtnConfirm.append(button);
+            vstack.append(dataSourceSetup);
+            const dataOptionsForm = new ScomPieChartDataOptionsForm(null, {
+              options: this._data.options,
+              dataSchema: JSON.stringify(advancedSchema),
+              uiSchema: JSON.stringify(builderSchema.advanced.uiSchema)
+            });
+            vstack.append(dataOptionsForm);
+            vstack.append(hstackBtnConfirm);
+            if (onChange) {
+              dataOptionsForm.onCustomInputChanged = async (optionsFormData: any) => {
+                const { apiEndpoint, file, mode } = dataSourceSetup.data;
+                onChange(true, {
+                  ...this._data, 
+                  ...optionsFormData,
+                  apiEndpoint, 
+                  file, 
+                  mode
+                });
               }
             }
-          ]
+            button.onClick = async () => {
+              const { apiEndpoint, file, mode } = dataSourceSetup.data;
+              if (mode === ModeType.LIVE && !apiEndpoint) return;
+              if (mode === ModeType.SNAPSHOT && !file?.cid) return;
+              if (onConfirm) {
+                const optionsFormData = await dataOptionsForm.refreshFormData();
+                onConfirm(true, {
+                  ...this._data, 
+                  ...optionsFormData,
+                  apiEndpoint, 
+                  file, 
+                  mode
+                });
+              }
+            }
+            return vstack;
+          }
         }
       },
       {
@@ -375,20 +252,7 @@ export default class ScomPieChart extends Module {
           }
         },
         userInputDataSchema: advancedSchema,
-        userInputUISchema: {
-          type: 'VerticalLayout',
-          elements: [
-            {
-              type: 'Control',
-              scope: '#/properties/options',
-              options: {
-                detail: {
-                  type: 'VerticalLayout'
-                }
-              }
-            }
-          ]
-        }
+        userInputUISchema: builderSchema.advanced.uiSchema
       }
       actions.push(advanced);
     }
@@ -402,7 +266,11 @@ export default class ScomPieChart extends Module {
         name: 'Builder Configurator',
         target: 'Builders',
         getActions: () => {
-          return this._getActions(this.getGeneralSchema(), this.getThemeSchema(), this.getAdvanceSchema());
+          const builderSchema = getBuilderSchema();
+          const generalSchema = builderSchema.general.dataSchema as IDataSchema;
+          const themeSchema = builderSchema.theme.dataSchema as IDataSchema;
+          const advancedSchema = builderSchema.advanced.dataSchema as any;
+          return this._getActions(generalSchema, themeSchema, advancedSchema);
         },
         getData: this.getData.bind(this),
         setData: async (data: IPieChartConfig) => {
@@ -416,7 +284,10 @@ export default class ScomPieChart extends Module {
         name: 'Embedder Configurator',
         target: 'Embedders',
         getActions: () => {
-          return this._getActions(this.getEmbeddersJSONSchema(), this.getThemeSchema())
+          const embedderSchema = getEmbedderSchema();
+          const generalSchema = embedderSchema.general.dataSchema as any;
+          const themeSchema = embedderSchema.theme.dataSchema as IDataSchema;
+          return this._getActions(generalSchema, themeSchema)
         },
         getLinkParams: () => {
           const data = this._data || {};
