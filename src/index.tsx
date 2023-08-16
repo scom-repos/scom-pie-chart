@@ -158,11 +158,13 @@ export default class ScomPieChart extends Module {
             const dataSourceSetup = new ScomChartDataSourceSetup(null, {
               ...this._data, 
               chartData: JSON.stringify(this.pieChartData),
-              onCustomDataChanged: async (data: any) => {
-                onChange(true, {
-                  ...this._data, 
-                  ...data
-                });
+              onCustomDataChanged: async (dataSourceSetupData: any) => {
+                if (onChange) {
+                  onChange(true, {
+                    ...this._data, 
+                    ...dataSourceSetupData
+                  });
+                }
               }
             });
             const hstackBtnConfirm = new HStack(null, {
