@@ -19,7 +19,8 @@ export interface IPieChartOptions {
 
 export interface IPieChartConfig {
   dataSource: string;
-  queryId: string;
+  queryId?: string;
+  apiEndpoint?: string;
   title: string,
   description?: string,
   options: IPieChartOptions,
@@ -28,4 +29,10 @@ export interface IPieChartConfig {
     name: string
   },
   mode: ModeType
+}
+
+export interface IFetchDataOptions {
+  dataSource: string;
+  queryId?: string;
+  apiEndpoint?: string;
 }
