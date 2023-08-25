@@ -59,9 +59,6 @@ export default class ScomPieChart extends Module {
   private _data: IPieChartConfig = DefaultData;
   tag: any = {};
   defaultEdit: boolean = true;
-  readonly onConfirm: () => Promise<void>;
-  readonly onDiscard: () => Promise<void>;
-  readonly onEdit: () => Promise<void>;
 
   static async create(options?: ScomPieChartElement, parent?: Container) {
     let self = new this(parent, options);
