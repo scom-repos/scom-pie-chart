@@ -57,48 +57,93 @@ const visualizationOptions = {
     }
 }
 
+const theme = {
+    darkShadow: {
+        type: 'boolean'
+    },
+    fontColor: {
+        type: 'string',
+        format: 'color'
+    },
+    backgroundColor: {
+        type: 'string',
+        format: 'color'
+    },
+    // width: {
+    //     type: 'string'
+    // },
+    height: {
+        type: 'string'
+    }
+}
+
+const themeUISchema = {
+    type: 'Category',
+    label: 'Theme',
+    elements: [
+        {
+            type: 'VerticalLayout',
+            elements: [
+                {
+                    type: 'Control',
+                    scope: '#/properties/darkShadow'
+                },
+                {
+                    type: 'Control',
+                    scope: '#/properties/fontColor'
+                },
+                {
+                    type: 'Control',
+                    scope: '#/properties/backgroundColor'
+                },
+                {
+                    type: 'Control',
+                    scope: '#/properties/height'
+                }
+            ]
+        }
+    ]
+}
+
 export function getBuilderSchema() {
     return {
-        general: {
-            dataSchema: {
-                type: 'object',
-                required: ['title'],
-                properties: {
-                    title: {
-                        type: 'string'
-                    },
-                    description: {
-                        type: 'string'
-                    }
-                }
-            },
-            uiSchema: {
-                type: 'VerticalLayout',
-                elements: [
-                    // {
-                    //   type: 'Control',
-                    //   scope: '#/properties/apiEndpoint',
-                    //   title: 'API Endpoint'
-                    // },
-                    {
-                        type: 'Control',
-                        scope: '#/properties/title'
-                    },
-                    {
-                        type: 'Control',
-                        scope: '#/properties/description'
-                    },
-                    {
-                        type: 'Control',
-                        scope: '#/properties/options',
-                        options: {
-                            detail: {
-                                type: 'VerticalLayout'
-                            }
-                        }
-                    }
-                ]
+        dataSchema: {
+            type: 'object',
+            required: ['title'],
+            properties: {
+                title: {
+                    type: 'string'
+                },
+                description: {
+                    type: 'string'
+                },
+                ...theme
             }
+        },
+        uiSchema: {
+            type: 'Categorization',
+            elements: [
+                {
+                    type: 'Category',
+                    label: 'General',
+                    elements: [
+                        {
+                            type: 'VerticalLayout',
+                            elements: [
+                                {
+                                    type: 'Control',
+                                    scope: '#/properties/title'
+                                },
+                                {
+                                    type: 'Control',
+                                    scope: '#/properties/description'
+                                }
+                            ]
+                        }
+                    ]
+                },
+                themeUISchema
+            ]
         },
         advanced: {
             dataSchema: {
@@ -111,14 +156,14 @@ export function getBuilderSchema() {
                 type: 'VerticalLayout',
                 elements: [
                     {
-                        type: "HorizontalLayout",
+                        type: 'HorizontalLayout',
                         elements: [
                             {
-                                type: "Control",
+                                type: 'Control',
                                 scope: '#/properties/options',
                                 options: {
                                     detail: {
-                                        type: "VerticalLayout"
+                                        type: 'VerticalLayout'
                                     }
                                 }
                             }
@@ -126,79 +171,64 @@ export function getBuilderSchema() {
                     }
                 ]
             }
-        },
-        theme: {
-            dataSchema: {
-                type: 'object',
-                properties: {
-                    darkShadow: {
-                        type: 'boolean'
-                    },
-                    fontColor: {
-                        type: 'string',
-                        format: 'color'
-                    },
-                    backgroundColor: {
-                        type: 'string',
-                        format: 'color'
-                    },
-                    width: {
-                        type: 'string'
-                    },
-                    height: {
-                        type: 'string'
-                    }
-                }
-            }
         }
     }
 }
 
 export function getEmbedderSchema() {
     return {
-        general: {
-            dataSchema: {
-                type: 'object',
-                properties: {
-                    apiEndpoint: {
-                        type: 'string',
-                        title: 'API Endpoint',
-                        required: true
-                    },
-                    title: {
-                        type: 'string',
-                        required: true
-                    },
-                    description: {
-                        type: 'string'
-                    },
-                    options: visualizationOptions
-                }
+        dataSchema: {
+            type: 'object',
+            properties: {
+                title: {
+                    type: 'string',
+                    required: true
+                },
+                description: {
+                    type: 'string'
+                },
+                options: visualizationOptions,
+                ...theme
             }
         },
-        theme: {
-            dataSchema: {
-                type: 'object',
-                properties: {
-                    darkShadow: {
-                        type: 'boolean'
-                    },
-                    fontColor: {
-                        type: 'string',
-                        format: 'color'
-                    },
-                    backgroundColor: {
-                        type: 'string',
-                        format: 'color'
-                    },
-                    width: {
-                        type: 'string'
-                    },
-                    height: {
-                        type: 'string'
-                    }
-                }
-            }
+        uiSchema: {
+            type: 'Categorization',
+            elements: [
+                {
+                    type: 'Category',
+                    label: 'General',
+                    elements: [
+                        {
+                            type: 'VerticalLayout',
+                            elements: [
+                                {
+                                    type: 'Control',
+                                    scope: '#/properties/title'
+                                },
+                                {
+                                    type: 'Control',
+                                    scope: '#/properties/description'
+                                },
+                                {
+                                    type: 'HorizontalLayout',
+                                    elements: [
+                                        {
+                                            type: 'Control',
+                                            scope: '#/properties/options',
+                                            options: {
+                                                detail: {
+                                                    type: 'VerticalLayout'
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                themeUISchema
+            ]
         }
     }
 }
