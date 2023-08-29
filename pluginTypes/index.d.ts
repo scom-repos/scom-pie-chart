@@ -97,35 +97,45 @@ declare module "@scom/scom-pie-chart/data.json.ts" {
 /// <amd-module name="@scom/scom-pie-chart/formSchema.ts" />
 declare module "@scom/scom-pie-chart/formSchema.ts" {
     export function getBuilderSchema(): {
-        general: {
-            dataSchema: {
-                type: string;
-                required: string[];
-                properties: {
-                    title: {
-                        type: string;
-                    };
-                    description: {
-                        type: string;
-                    };
+        dataSchema: {
+            type: string;
+            required: string[];
+            properties: {
+                darkShadow: {
+                    type: string;
+                };
+                fontColor: {
+                    type: string;
+                    format: string;
+                };
+                backgroundColor: {
+                    type: string;
+                    format: string;
+                };
+                height: {
+                    type: string;
+                };
+                title: {
+                    type: string;
+                };
+                description: {
+                    type: string;
                 };
             };
-            uiSchema: {
+        };
+        uiSchema: {
+            type: string;
+            elements: {
                 type: string;
-                elements: ({
+                label: string;
+                elements: {
                     type: string;
-                    scope: string;
-                    options?: undefined;
-                } | {
-                    type: string;
-                    scope: string;
-                    options: {
-                        detail: {
-                            type: string;
-                        };
-                    };
-                })[];
-            };
+                    elements: {
+                        type: string;
+                        scope: string;
+                    }[];
+                }[];
+            }[];
         };
         advanced: {
             dataSchema: {
@@ -207,101 +217,84 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                 }[];
             };
         };
-        theme: {
-            dataSchema: {
-                type: string;
-                properties: {
-                    darkShadow: {
-                        type: string;
-                    };
-                    fontColor: {
-                        type: string;
-                        format: string;
-                    };
-                    backgroundColor: {
-                        type: string;
-                        format: string;
-                    };
-                    width: {
-                        type: string;
-                    };
-                    height: {
-                        type: string;
-                    };
-                };
-            };
-        };
     };
     export function getEmbedderSchema(): {
-        general: {
-            dataSchema: {
-                type: string;
-                properties: {
-                    apiEndpoint: {
-                        type: string;
-                        title: string;
-                        required: boolean;
-                    };
-                    title: {
-                        type: string;
-                        required: boolean;
-                    };
-                    description: {
-                        type: string;
-                    };
-                    options: {
-                        type: string;
-                        title: string;
-                        properties: {
-                            xColumn: {
-                                type: string;
-                                title: string;
-                                required: boolean;
-                            };
-                            yColumn: {
-                                type: string;
-                                title: string;
-                                required: boolean;
-                            };
-                            serieName: {
-                                type: string;
-                            };
-                            numberFormat: {
-                                type: string;
-                            };
-                            legend: {
-                                type: string;
-                                title: string;
-                                properties: {
-                                    show: {
-                                        type: string;
-                                    };
-                                    scroll: {
-                                        type: string;
-                                    };
-                                    position: {
-                                        type: string;
-                                        enum: string[];
-                                    };
+        dataSchema: {
+            type: string;
+            properties: {
+                darkShadow: {
+                    type: string;
+                };
+                fontColor: {
+                    type: string;
+                    format: string;
+                };
+                backgroundColor: {
+                    type: string;
+                    format: string;
+                };
+                height: {
+                    type: string;
+                };
+                title: {
+                    type: string;
+                    required: boolean;
+                };
+                description: {
+                    type: string;
+                };
+                options: {
+                    type: string;
+                    title: string;
+                    properties: {
+                        xColumn: {
+                            type: string;
+                            title: string;
+                            required: boolean;
+                        };
+                        yColumn: {
+                            type: string;
+                            title: string;
+                            required: boolean;
+                        };
+                        serieName: {
+                            type: string;
+                        };
+                        numberFormat: {
+                            type: string;
+                        };
+                        legend: {
+                            type: string;
+                            title: string;
+                            properties: {
+                                show: {
+                                    type: string;
+                                };
+                                scroll: {
+                                    type: string;
+                                };
+                                position: {
+                                    type: string;
+                                    enum: string[];
                                 };
                             };
-                            showDataLabels: {
+                        };
+                        showDataLabels: {
+                            type: string;
+                        };
+                        valuesOptions: {
+                            type: string;
+                            items: {
                                 type: string;
-                            };
-                            valuesOptions: {
-                                type: string;
-                                items: {
-                                    type: string;
-                                    properties: {
-                                        name: {
-                                            type: string;
-                                            required: boolean;
-                                        };
-                                        color: {
-                                            type: string;
-                                            format: string;
-                                            required: boolean;
-                                        };
+                                properties: {
+                                    name: {
+                                        type: string;
+                                        required: boolean;
+                                    };
+                                    color: {
+                                        type: string;
+                                        format: string;
+                                        required: boolean;
                                     };
                                 };
                             };
@@ -310,29 +303,32 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                 };
             };
         };
-        theme: {
-            dataSchema: {
+        uiSchema: {
+            type: string;
+            elements: {
                 type: string;
-                properties: {
-                    darkShadow: {
+                label: string;
+                elements: {
+                    type: string;
+                    elements: ({
                         type: string;
-                    };
-                    fontColor: {
+                        scope: string;
+                        elements?: undefined;
+                    } | {
                         type: string;
-                        format: string;
-                    };
-                    backgroundColor: {
-                        type: string;
-                        format: string;
-                    };
-                    width: {
-                        type: string;
-                    };
-                    height: {
-                        type: string;
-                    };
-                };
-            };
+                        elements: {
+                            type: string;
+                            scope: string;
+                            options: {
+                                detail: {
+                                    type: string;
+                                };
+                            };
+                        }[];
+                        scope?: undefined;
+                    })[];
+                }[];
+            }[];
         };
     };
 }
@@ -372,7 +368,7 @@ declare module "@scom/scom-pie-chart/dataOptionsForm.tsx" {
 }
 /// <amd-module name="@scom/scom-pie-chart" />
 declare module "@scom/scom-pie-chart" {
-    import { Module, ControlElement, Container, IDataSchema, VStack } from '@ijstech/components';
+    import { Module, ControlElement, Container, IDataSchema, VStack, IUISchema } from '@ijstech/components';
     import { IPieChartConfig } from "@scom/scom-pie-chart/global/index.ts";
     interface ScomPieChartElement extends ControlElement {
         lazyLoad?: boolean;
@@ -415,22 +411,7 @@ declare module "@scom/scom-pie-chart" {
                     redo: () => void;
                 };
                 userInputDataSchema: IDataSchema;
-                userInputUISchema: {
-                    type: string;
-                    elements: ({
-                        type: string;
-                        scope: string;
-                        options?: undefined;
-                    } | {
-                        type: string;
-                        scope: string;
-                        options: {
-                            detail: {
-                                type: string;
-                            };
-                        };
-                    })[];
-                };
+                userInputUISchema: IUISchema;
                 customUI?: undefined;
             } | {
                 name: string;
@@ -445,17 +426,6 @@ declare module "@scom/scom-pie-chart" {
                 };
                 userInputDataSchema?: undefined;
                 userInputUISchema?: undefined;
-            } | {
-                name: string;
-                icon: string;
-                command: (builder: any, userInputData: any) => {
-                    execute: () => Promise<void>;
-                    undo: () => void;
-                    redo: () => void;
-                };
-                userInputDataSchema: IDataSchema;
-                userInputUISchema?: undefined;
-                customUI?: undefined;
             })[];
             getData: any;
             setData: (data: IPieChartConfig) => Promise<void>;
@@ -475,22 +445,7 @@ declare module "@scom/scom-pie-chart" {
                     redo: () => void;
                 };
                 userInputDataSchema: IDataSchema;
-                userInputUISchema: {
-                    type: string;
-                    elements: ({
-                        type: string;
-                        scope: string;
-                        options?: undefined;
-                    } | {
-                        type: string;
-                        scope: string;
-                        options: {
-                            detail: {
-                                type: string;
-                            };
-                        };
-                    })[];
-                };
+                userInputUISchema: IUISchema;
                 customUI?: undefined;
             } | {
                 name: string;
@@ -505,17 +460,6 @@ declare module "@scom/scom-pie-chart" {
                 };
                 userInputDataSchema?: undefined;
                 userInputUISchema?: undefined;
-            } | {
-                name: string;
-                icon: string;
-                command: (builder: any, userInputData: any) => {
-                    execute: () => Promise<void>;
-                    undo: () => void;
-                    redo: () => void;
-                };
-                userInputDataSchema: IDataSchema;
-                userInputUISchema?: undefined;
-                customUI?: undefined;
             })[];
             getLinkParams: () => {
                 data: string;
