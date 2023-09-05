@@ -1,55 +1,59 @@
-const visualizationOptions = {
-    type: 'object',
-    title: 'Visualization Options',
-    properties: {
-        xColumn: {
-            type: 'string',
-            title: 'X column',
-            required: true
-        },
-        yColumn: {
-            type: 'string',
-            title: 'Y column',
-            required: true
-        },
-        serieName: {
-            type: 'string'
-        },
-        numberFormat: {
-            type: 'string'
-        },
-        legend: {
-            type: 'object',
-            title: 'Show Chart Legend',
-            properties: {
-                show: {
-                    type: 'boolean'
-                },
-                scroll: {
-                    type: 'boolean'
-                },
-                position: {
-                    type: 'string',
-                    enum: ['top', 'bottom', 'left', 'right']
-                }
-            }
-        },
-        showDataLabels: {
-            type: 'boolean'
-        },
-        valuesOptions: {
-            type: 'array',
-            items: {
+function visualizationOptions(columns: string[]) {
+    return {
+        type: 'object',
+        title: 'Visualization Options',
+        properties: {
+            xColumn: {
+                type: 'string',
+                title: 'X column',
+                enum: columns,
+                required: true
+            },
+            yColumn: {
+                type: 'string',
+                title: 'Y column',
+                enum: columns,
+                required: true
+            },
+            serieName: {
+                type: 'string'
+            },
+            numberFormat: {
+                type: 'string'
+            },
+            legend: {
                 type: 'object',
+                title: 'Show Chart Legend',
                 properties: {
-                    name: {
-                        type: 'string',
-                        required: true
+                    show: {
+                        type: 'boolean'
                     },
-                    color: {
+                    scroll: {
+                        type: 'boolean'
+                    },
+                    position: {
                         type: 'string',
-                        format: 'color',
-                        required: true
+                        enum: ['top', 'bottom', 'left', 'right']
+                    }
+                }
+            },
+            showDataLabels: {
+                type: 'boolean'
+            },
+            valuesOptions: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            required: true
+                        },
+                        color: {
+                            type: 'string',
+                            format: 'color',
+                            required: true
+                        }
                     }
                 }
             }
@@ -105,7 +109,7 @@ const themeUISchema = {
     ]
 }
 
-export function getBuilderSchema() {
+export function getBuilderSchema(columns: string[]) {
     return {
         dataSchema: {
             type: 'object',
@@ -149,7 +153,7 @@ export function getBuilderSchema() {
             dataSchema: {
                 type: 'object',
                 properties: {
-                    options: visualizationOptions
+                    options: visualizationOptions(columns)
                 }
             },
             uiSchema: {
@@ -175,7 +179,7 @@ export function getBuilderSchema() {
     }
 }
 
-export function getEmbedderSchema() {
+export function getEmbedderSchema(columns: string[]) {
     return {
         dataSchema: {
             type: 'object',
@@ -187,7 +191,7 @@ export function getEmbedderSchema() {
                 description: {
                     type: 'string'
                 },
-                options: visualizationOptions,
+                options: visualizationOptions(columns),
                 ...theme
             }
         },
