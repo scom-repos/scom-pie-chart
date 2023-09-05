@@ -35,16 +35,11 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
         precision?: number;
         roundingMode?: BigNumber.RoundingMode;
     }
-    export interface IFetchDataOptions {
-        dataSource: string;
-        queryId?: string;
-        apiEndpoint?: string;
-    }
 }
 /// <amd-module name="@scom/scom-pie-chart/global/utils.ts" />
 declare module "@scom/scom-pie-chart/global/utils.ts" {
     import { BigNumber } from '@ijstech/eth-wallet';
-    import { IFormatNumberOptions, IFetchDataOptions } from "@scom/scom-pie-chart/global/interfaces.ts";
+    import { IFormatNumberOptions } from "@scom/scom-pie-chart/global/interfaces.ts";
     export const formatNumber: (num: number, options?: {
         format?: string;
         decimals?: number;
@@ -52,7 +47,6 @@ declare module "@scom/scom-pie-chart/global/utils.ts" {
     }) => any;
     export const formatNumberByFormat: (num: number, format: string, separators?: boolean) => any;
     export const formatNumberWithSeparators: (value: number | string | BigNumber, options: IFormatNumberOptions) => string;
-    export const callAPI: (options: IFetchDataOptions) => Promise<any>;
 }
 /// <amd-module name="@scom/scom-pie-chart/global/index.ts" />
 declare module "@scom/scom-pie-chart/global/index.ts" {
@@ -96,7 +90,7 @@ declare module "@scom/scom-pie-chart/data.json.ts" {
 }
 /// <amd-module name="@scom/scom-pie-chart/formSchema.ts" />
 declare module "@scom/scom-pie-chart/formSchema.ts" {
-    export function getBuilderSchema(): {
+    export function getBuilderSchema(columns: string[]): {
         dataSchema: {
             type: string;
             required: string[];
@@ -148,11 +142,13 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                             xColumn: {
                                 type: string;
                                 title: string;
+                                enum: string[];
                                 required: boolean;
                             };
                             yColumn: {
                                 type: string;
                                 title: string;
+                                enum: string[];
                                 required: boolean;
                             };
                             serieName: {
@@ -218,7 +214,7 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
             };
         };
     };
-    export function getEmbedderSchema(): {
+    export function getEmbedderSchema(columns: string[]): {
         dataSchema: {
             type: string;
             properties: {
@@ -250,11 +246,13 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                         xColumn: {
                             type: string;
                             title: string;
+                            enum: string[];
                             required: boolean;
                         };
                         yColumn: {
                             type: string;
                             title: string;
+                            enum: string[];
                             required: boolean;
                         };
                         serieName: {
@@ -388,6 +386,7 @@ declare module "@scom/scom-pie-chart" {
         private loadingElm;
         private lbTitle;
         private lbDescription;
+        private columnNames;
         private pieChartData;
         private _data;
         tag: any;

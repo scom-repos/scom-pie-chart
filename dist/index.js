@@ -33,10 +33,10 @@ define("@scom/scom-pie-chart/global/interfaces.ts", ["require", "exports"], func
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
 });
-define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@scom/scom-chart-data-source-setup", "@ijstech/eth-wallet"], function (require, exports, scom_chart_data_source_setup_1, eth_wallet_1) {
+define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@ijstech/eth-wallet"], function (require, exports, eth_wallet_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.callAPI = exports.formatNumberWithSeparators = exports.formatNumberByFormat = exports.formatNumber = void 0;
+    exports.formatNumberWithSeparators = exports.formatNumberByFormat = exports.formatNumber = void 0;
     const formatNumber = (num, options) => {
         if (num === null)
             return '-';
@@ -117,29 +117,6 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@scom/sco
         return bigValue.toFormat();
     };
     exports.formatNumberWithSeparators = formatNumberWithSeparators;
-    const callAPI = async (options) => {
-        if (!options.dataSource)
-            return [];
-        try {
-            let apiEndpoint = '';
-            switch (options.dataSource) {
-                case scom_chart_data_source_setup_1.DataSource.Dune:
-                    apiEndpoint = `/dune/query/${options.queryId}`;
-                    break;
-                case scom_chart_data_source_setup_1.DataSource.Custom:
-                    apiEndpoint = options.apiEndpoint;
-                    break;
-            }
-            if (!apiEndpoint)
-                return [];
-            const response = await fetch(apiEndpoint);
-            const jsonData = await response.json();
-            return jsonData.result.rows || [];
-        }
-        catch (_a) { }
-        return [];
-    };
-    exports.callAPI = callAPI;
 });
 define("@scom/scom-pie-chart/global/index.ts", ["require", "exports", "@scom/scom-pie-chart/global/interfaces.ts", "@scom/scom-pie-chart/global/utils.ts"], function (require, exports, interfaces_1, utils_1) {
     "use strict";
@@ -224,64 +201,68 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getEmbedderSchema = exports.getBuilderSchema = void 0;
     ///<amd-module name='@scom/scom-pie-chart/formSchema.ts'/> 
-    const visualizationOptions = {
-        type: 'object',
-        title: 'Visualization Options',
-        properties: {
-            xColumn: {
-                type: 'string',
-                title: 'X column',
-                required: true
-            },
-            yColumn: {
-                type: 'string',
-                title: 'Y column',
-                required: true
-            },
-            serieName: {
-                type: 'string'
-            },
-            numberFormat: {
-                type: 'string'
-            },
-            legend: {
-                type: 'object',
-                title: 'Show Chart Legend',
-                properties: {
-                    show: {
-                        type: 'boolean'
-                    },
-                    scroll: {
-                        type: 'boolean'
-                    },
-                    position: {
-                        type: 'string',
-                        enum: ['top', 'bottom', 'left', 'right']
-                    }
-                }
-            },
-            showDataLabels: {
-                type: 'boolean'
-            },
-            valuesOptions: {
-                type: 'array',
-                items: {
+    function visualizationOptions(columns) {
+        return {
+            type: 'object',
+            title: 'Visualization Options',
+            properties: {
+                xColumn: {
+                    type: 'string',
+                    title: 'X column',
+                    enum: columns,
+                    required: true
+                },
+                yColumn: {
+                    type: 'string',
+                    title: 'Y column',
+                    enum: columns,
+                    required: true
+                },
+                serieName: {
+                    type: 'string'
+                },
+                numberFormat: {
+                    type: 'string'
+                },
+                legend: {
                     type: 'object',
+                    title: 'Show Chart Legend',
                     properties: {
-                        name: {
-                            type: 'string',
-                            required: true
+                        show: {
+                            type: 'boolean'
                         },
-                        color: {
+                        scroll: {
+                            type: 'boolean'
+                        },
+                        position: {
                             type: 'string',
-                            format: 'color',
-                            required: true
+                            enum: ['top', 'bottom', 'left', 'right']
+                        }
+                    }
+                },
+                showDataLabels: {
+                    type: 'boolean'
+                },
+                valuesOptions: {
+                    type: 'array',
+                    items: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                                required: true
+                            },
+                            color: {
+                                type: 'string',
+                                format: 'color',
+                                required: true
+                            }
                         }
                     }
                 }
             }
-        }
-    };
+        };
+    }
     const theme = {
         darkShadow: {
             type: 'boolean'
@@ -328,7 +309,7 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
             }
         ]
     };
-    function getBuilderSchema() {
+    function getBuilderSchema(columns) {
         return {
             dataSchema: {
                 type: 'object',
@@ -368,7 +349,7 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
                 dataSchema: {
                     type: 'object',
                     properties: {
-                        options: visualizationOptions
+                        options: visualizationOptions(columns)
                     }
                 },
                 uiSchema: {
@@ -394,7 +375,7 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
         };
     }
     exports.getBuilderSchema = getBuilderSchema;
-    function getEmbedderSchema() {
+    function getEmbedderSchema(columns) {
         return {
             dataSchema: {
                 type: 'object',
@@ -403,7 +384,7 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
                         required: true
                     }, description: {
                         type: 'string'
-                    }, options: visualizationOptions }, theme)
+                    }, options: visualizationOptions(columns) }, theme)
             },
             uiSchema: {
                 type: 'Categorization',
@@ -517,18 +498,18 @@ define("@scom/scom-pie-chart/dataOptionsForm.tsx", ["require", "exports", "@ijst
     ], ScomPieChartDataOptionsForm);
     exports.default = ScomPieChartDataOptionsForm;
 });
-define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@scom/scom-pie-chart/global/index.ts", "@scom/scom-pie-chart/index.css.ts", "@scom/scom-pie-chart/assets.ts", "@scom/scom-pie-chart/data.json.ts", "@scom/scom-chart-data-source-setup", "@scom/scom-pie-chart/formSchema.ts", "@scom/scom-pie-chart/dataOptionsForm.tsx"], function (require, exports, components_4, index_1, index_css_1, assets_1, data_json_1, scom_chart_data_source_setup_2, formSchema_1, dataOptionsForm_1) {
+define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@scom/scom-pie-chart/global/index.ts", "@scom/scom-pie-chart/index.css.ts", "@scom/scom-pie-chart/assets.ts", "@scom/scom-pie-chart/data.json.ts", "@scom/scom-chart-data-source-setup", "@scom/scom-pie-chart/formSchema.ts", "@scom/scom-pie-chart/dataOptionsForm.tsx"], function (require, exports, components_4, index_1, index_css_1, assets_1, data_json_1, scom_chart_data_source_setup_1, formSchema_1, dataOptionsForm_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_4.Styles.Theme.ThemeVars;
     const currentTheme = components_4.Styles.Theme.currentTheme;
     const DefaultData = {
-        dataSource: scom_chart_data_source_setup_2.DataSource.Dune,
+        dataSource: scom_chart_data_source_setup_1.DataSource.Dune,
         queryId: '',
         apiEndpoint: '',
         title: '',
         options: undefined,
-        mode: scom_chart_data_source_setup_2.ModeType.LIVE
+        mode: scom_chart_data_source_setup_1.ModeType.LIVE
     };
     let ScomPieChart = class ScomPieChart extends components_4.Module {
         static async create(options, parent) {
@@ -538,6 +519,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
         }
         constructor(parent, options) {
             super(parent, options);
+            this.columnNames = [];
             this.pieChartData = [];
             this._data = DefaultData;
             this.tag = {};
@@ -565,7 +547,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.onUpdateBlock();
         }
         _getActions(dataSchema, uiSchema, advancedSchema) {
-            const builderSchema = (0, formSchema_1.getBuilderSchema)();
+            const builderSchema = (0, formSchema_1.getBuilderSchema)(this.columnNames);
             const actions = [
                 {
                     name: 'Edit',
@@ -649,7 +631,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     customUI: {
                         render: (data, onConfirm, onChange) => {
                             const vstack = new components_4.VStack(null, { gap: '1rem' });
-                            const dataSourceSetup = new scom_chart_data_source_setup_2.default(null, Object.assign(Object.assign({}, this._data), { chartData: JSON.stringify(this.pieChartData), onCustomDataChanged: async (dataSourceSetupData) => {
+                            const dataSourceSetup = new scom_chart_data_source_setup_1.default(null, Object.assign(Object.assign({}, this._data), { chartData: JSON.stringify(this.pieChartData), onCustomDataChanged: async (dataSourceSetupData) => {
                                     if (onChange) {
                                         onChange(true, Object.assign(Object.assign({}, this._data), dataSourceSetupData));
                                     }
@@ -680,9 +662,9 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                             }
                             button.onClick = async () => {
                                 const { dataSource, file, mode } = dataSourceSetup.data;
-                                if (mode === scom_chart_data_source_setup_2.ModeType.LIVE && !dataSource)
+                                if (mode === scom_chart_data_source_setup_1.ModeType.LIVE && !dataSource)
                                     return;
-                                if (mode === scom_chart_data_source_setup_2.ModeType.SNAPSHOT && !(file === null || file === void 0 ? void 0 : file.cid))
+                                if (mode === scom_chart_data_source_setup_1.ModeType.SNAPSHOT && !(file === null || file === void 0 ? void 0 : file.cid))
                                     return;
                                 if (onConfirm) {
                                     const optionsFormData = await dataOptionsForm.refreshFormData();
@@ -729,7 +711,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     name: 'Builder Configurator',
                     target: 'Builders',
                     getActions: () => {
-                        const builderSchema = (0, formSchema_1.getBuilderSchema)();
+                        const builderSchema = (0, formSchema_1.getBuilderSchema)(this.columnNames);
                         const dataSchema = builderSchema.dataSchema;
                         const uiSchema = builderSchema.uiSchema;
                         const advancedSchema = builderSchema.advanced.dataSchema;
@@ -747,7 +729,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     name: 'Embedder Configurator',
                     target: 'Embedders',
                     getActions: () => {
-                        const embedderSchema = (0, formSchema_1.getEmbedderSchema)();
+                        const embedderSchema = (0, formSchema_1.getEmbedderSchema)(this.columnNames);
                         const dataSchema = embedderSchema.dataSchema;
                         const uiSchema = embedderSchema.uiSchema;
                         return this._getActions(dataSchema, uiSchema);
@@ -792,7 +774,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
         async updateChartData() {
             var _a;
             this.loadingElm.visible = true;
-            if (((_a = this._data) === null || _a === void 0 ? void 0 : _a.mode) === scom_chart_data_source_setup_2.ModeType.SNAPSHOT)
+            if (((_a = this._data) === null || _a === void 0 ? void 0 : _a.mode) === scom_chart_data_source_setup_1.ModeType.SNAPSHOT)
                 await this.renderSnapshotData();
             else
                 await this.renderLiveData();
@@ -802,9 +784,11 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             var _a;
             if ((_a = this._data.file) === null || _a === void 0 ? void 0 : _a.cid) {
                 try {
-                    const data = await (0, scom_chart_data_source_setup_2.fetchContentByCID)(this._data.file.cid);
+                    const data = await (0, scom_chart_data_source_setup_1.fetchContentByCID)(this._data.file.cid);
                     if (data) {
-                        this.pieChartData = data;
+                        const { metadata, rows } = data;
+                        this.pieChartData = rows;
+                        this.columnNames = (metadata === null || metadata === void 0 ? void 0 : metadata.column_names) || [];
                         this.onUpdateBlock();
                         return;
                     }
@@ -812,19 +796,22 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 catch (_b) { }
             }
             this.pieChartData = [];
+            this.columnNames = [];
             this.onUpdateBlock();
         }
         async renderLiveData() {
             const dataSource = this._data.dataSource;
             if (dataSource) {
                 try {
-                    const data = await (0, index_1.callAPI)({
+                    const data = await (0, scom_chart_data_source_setup_1.callAPI)({
                         dataSource,
                         queryId: this._data.queryId,
                         apiEndpoint: this._data.apiEndpoint
                     });
                     if (data) {
-                        this.pieChartData = data;
+                        const { metadata, rows } = data;
+                        this.pieChartData = rows;
+                        this.columnNames = (metadata === null || metadata === void 0 ? void 0 : metadata.column_names) || [];
                         this.onUpdateBlock();
                         return;
                     }
@@ -832,6 +819,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 catch (_a) { }
             }
             this.pieChartData = [];
+            this.columnNames = [];
             this.onUpdateBlock();
         }
         renderChart() {
