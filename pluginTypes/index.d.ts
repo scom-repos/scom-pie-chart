@@ -38,15 +38,12 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
 }
 /// <amd-module name="@scom/scom-pie-chart/global/utils.ts" />
 declare module "@scom/scom-pie-chart/global/utils.ts" {
-    import { BigNumber } from '@ijstech/eth-wallet';
-    import { IFormatNumberOptions } from "@scom/scom-pie-chart/global/interfaces.ts";
     export const formatNumber: (num: number, options?: {
         format?: string;
         decimals?: number;
         percentValues?: boolean;
     }) => any;
     export const formatNumberByFormat: (num: number, format: string, separators?: boolean) => any;
-    export const formatNumberWithSeparators: (value: number | string | BigNumber, options: IFormatNumberOptions) => string;
 }
 /// <amd-module name="@scom/scom-pie-chart/global/index.ts" />
 declare module "@scom/scom-pie-chart/global/index.ts" {
