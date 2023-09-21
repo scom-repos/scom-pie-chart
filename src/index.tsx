@@ -396,14 +396,19 @@ export default class ScomPieChart extends Module {
     let _legend = {
       show: legend?.show,
     }
-    if (legend?.position) {
-      _legend[legend.position] = 'auto';
-      if (['left', 'right'].includes(legend.position)) {
-        _legend['orient'] = 'vertical';
+    if (legend) {
+      if (legend.position) {
+        _legend[legend.position] = 'auto';
+        if (['left', 'right'].includes(legend.position)) {
+          _legend['orient'] = 'vertical';
+        }
       }
-    }
-    if (legend?.scroll) {
-      _legend['type'] = 'scroll';
+      if (legend.scroll) {
+        _legend['type'] = 'scroll';
+      }
+      if (legend.fontColor) {
+        _legend['textStyle'] = { color: legend.fontColor };
+      }
     }
     const data = this.pieChartData.map((v) => {
       const values = valuesOptions.find(f => f.name === v[xColumn]);

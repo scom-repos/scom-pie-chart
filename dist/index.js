@@ -230,6 +230,10 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
                         show: {
                             type: 'boolean'
                         },
+                        fontColor: {
+                            type: 'string',
+                            format: 'color'
+                        },
                         scroll: {
                             type: 'boolean'
                         },
@@ -833,14 +837,19 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             let _legend = {
                 show: legend === null || legend === void 0 ? void 0 : legend.show,
             };
-            if (legend === null || legend === void 0 ? void 0 : legend.position) {
-                _legend[legend.position] = 'auto';
-                if (['left', 'right'].includes(legend.position)) {
-                    _legend['orient'] = 'vertical';
+            if (legend) {
+                if (legend.position) {
+                    _legend[legend.position] = 'auto';
+                    if (['left', 'right'].includes(legend.position)) {
+                        _legend['orient'] = 'vertical';
+                    }
                 }
-            }
-            if (legend === null || legend === void 0 ? void 0 : legend.scroll) {
-                _legend['type'] = 'scroll';
+                if (legend.scroll) {
+                    _legend['type'] = 'scroll';
+                }
+                if (legend.fontColor) {
+                    _legend['textStyle'] = { color: legend.fontColor };
+                }
             }
             const data = this.pieChartData.map((v) => {
                 const values = valuesOptions.find(f => f.name === v[xColumn]);
