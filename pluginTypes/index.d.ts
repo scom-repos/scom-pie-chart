@@ -8,6 +8,7 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
         serieName?: string;
         legend?: {
             show?: boolean;
+            fontColor?: string;
             scroll?: boolean;
             position?: 'top' | 'bottom' | 'left' | 'right';
         };
@@ -161,6 +162,10 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                                     show: {
                                         type: string;
                                     };
+                                    fontColor: {
+                                        type: string;
+                                        format: string;
+                                    };
                                     scroll: {
                                         type: string;
                                     };
@@ -264,6 +269,10 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                             properties: {
                                 show: {
                                     type: string;
+                                };
+                                fontColor: {
+                                    type: string;
+                                    format: string;
                                 };
                                 scroll: {
                                     type: string;

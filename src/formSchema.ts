@@ -28,6 +28,10 @@ function visualizationOptions(columns: string[]) {
                     show: {
                         type: 'boolean'
                     },
+                    fontColor: {
+                        type: 'string',
+                        format: 'color'
+                    },
                     scroll: {
                         type: 'boolean'
                     },

@@ -7,6 +7,7 @@ export interface IPieChartOptions {
   serieName?: string,
   legend?: {
     show?: boolean,
+    fontColor?: string,
     scroll?: boolean,
     position?: 'top' | 'bottom' | 'left' | 'right' // top, bottom: horizontal -- left, right: vertical
   },
