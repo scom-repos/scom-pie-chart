@@ -19,7 +19,7 @@ export const formatNumber = (num: number, options?: { format?: string, decimals?
   //   return FormatUtils.formatNumber((num / 1000000), { decimalFigures: decimals || 3 }) + 'M';
   // }
   if (absNum >= 1000) {
-    return FormatUtils.formatNumber(num, { decimalFigures: decimals || 3, roundingMethod: 'round', shortScale: true });
+    return FormatUtils.formatNumber(num, { decimalFigures: decimals, roundingMethod: 'round', shortScale: true });
   }
   if (absNum < 0.0000001) {
     return FormatUtils.formatNumber(num, { decimalFigures: 0 });
