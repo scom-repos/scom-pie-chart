@@ -55,7 +55,7 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@ijstech/
         //   return FormatUtils.formatNumber((num / 1000000), { decimalFigures: decimals || 3 }) + 'M';
         // }
         if (absNum >= 1000) {
-            return components_1.FormatUtils.formatNumber(num, { decimalFigures: decimals || 3, roundingMethod: 'round', shortScale: true });
+            return components_1.FormatUtils.formatNumber(num, { decimalFigures: decimals, roundingMethod: 'round', shortScale: true });
         }
         if (absNum < 0.0000001) {
             return components_1.FormatUtils.formatNumber(num, { decimalFigures: 0 });
