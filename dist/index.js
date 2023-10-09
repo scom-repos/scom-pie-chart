@@ -48,12 +48,6 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@ijstech/
             return (0, exports.formatNumberByFormat)(num, format);
         }
         const absNum = Math.abs(num);
-        // if (absNum >= 1000000000) {
-        //   return FormatUtils.formatNumber((num / 1000000000), { decimalFigures: decimals || 3 }) + 'B';
-        // }
-        // if (absNum >= 1000000) {
-        //   return FormatUtils.formatNumber((num / 1000000), { decimalFigures: decimals || 3 }) + 'M';
-        // }
         if (absNum >= 1000) {
             return components_1.FormatUtils.formatNumber(num, { decimalFigures: decimals, roundingMethod: 'round', shortScale: true });
         }
@@ -63,12 +57,9 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@ijstech/
         if (absNum < 0.00001) {
             return components_1.FormatUtils.formatNumber(num, { decimalFigures: 6 });
         }
-        if (absNum < 0.001 || absNum < 1) {
+        if (absNum < 1) {
             return components_1.FormatUtils.formatNumber(num, { decimalFigures: 4 });
         }
-        // if (absNum < 1) {
-        //   return FormatUtils.formatNumber(num, { decimalFigures: 4 });
-        // }
         return components_1.FormatUtils.formatNumber(num, { decimalFigures: 2 });
     };
     exports.formatNumber = formatNumber;
@@ -91,32 +82,6 @@ define("@scom/scom-pie-chart/global/utils.ts", ["require", "exports", "@ijstech/
     };
     exports.formatNumberByFormat = formatNumberByFormat;
 });
-// export const FormatUtils.formatNumber = (value: number | string | BigNumber, options: IFormatNumberOptions): string => {
-//   let bigValue: BigNumber;
-//   if (value instanceof BigNumber) {
-//     bigValue = value;
-//   }
-//   else {
-//     bigValue = new BigNumber(value);
-//   }
-//   if (bigValue.isNaN() || !bigValue.isFinite()) {
-//     return '0';
-//   }
-//   if (options.precision || options.precision === 0) {
-//     let outputStr = '';
-//     if (bigValue.gte(1)) {
-//       outputStr = bigValue.toFormat(options.precision, options.roundingMode || BigNumber.ROUND_HALF_CEIL);
-//     }
-//     else {
-//       outputStr = bigValue.toNumber().toLocaleString('en-US', { maximumSignificantDigits: options.precision || 2 });
-//     }
-//     if (outputStr.length > 18) {
-//       outputStr = outputStr.substring(0, 18) + '...';
-//     }
-//     return outputStr;
-//   }
-//   return bigValue.toFormat();
-// }
 define("@scom/scom-pie-chart/global/index.ts", ["require", "exports", "@scom/scom-pie-chart/global/interfaces.ts", "@scom/scom-pie-chart/global/utils.ts"], function (require, exports, interfaces_1, utils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -590,6 +555,10 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 this.tag.parentCustomFontColor = value.customFontColor;
                 this.tag.parentBackgroundColor = value.backgroundColor;
                 this.tag.parentCustomBackgroundColor = value.customBackgoundColor;
+                this.tag.customWidgetsBackground = value.customWidgetsBackground;
+                this.tag.widgetsBackground = value.widgetsBackground;
+                this.tag.customWidgetsColor = value.customWidgetsColor;
+                this.tag.widgetsColor = value.widgetsColor;
                 this.onUpdateBlock();
                 return;
             }
@@ -822,8 +791,8 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 this.pieChartContainer.style.boxShadow = ((_a = this.tag) === null || _a === void 0 ? void 0 : _a.darkShadow) ? '0 -2px 10px rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.16) 0px 1px 4px';
             }
             const tags = this.tag || {};
-            this.updateStyle('--custom-text-color', tags.customFontColor ? tags.fontColor : tags.parentCustomFontColor ? tags.parentFontColor : '');
-            this.updateStyle('--custom-background-color', tags.customBackgroundColor ? tags.backgroundColor : tags.parentCustomBackgroundColor ? tags.parentBackgroundColor : '');
+            this.updateStyle('--custom-text-color', tags.customFontColor ? tags.fontColor : tags.customWidgetsColor ? tags.widgetsColor : tags.parentCustomFontColor ? tags.parentFontColor : '');
+            this.updateStyle('--custom-background-color', tags.customBackgroundColor ? tags.backgroundColor : tags.customWidgetsBackground ? tags.widgetsBackground : tags.parentCustomBackgroundColor ? tags.parentBackgroundColor : '');
         }
         onUpdateBlock() {
             this.renderChart();
