@@ -1,5 +1,3 @@
-// import { BigNumber } from '@ijstech/eth-wallet';
-// import { IFormatNumberOptions } from "./interfaces";
 import { FormatUtils } from '@ijstech/components';
 
 export const formatNumber = (num: number, options?: { format?: string, decimals?: number, percentValues?: boolean }) => {
@@ -12,12 +10,6 @@ export const formatNumber = (num: number, options?: { format?: string, decimals?
     return formatNumberByFormat(num, format);
   }
   const absNum = Math.abs(num);
-  // if (absNum >= 1000000000) {
-  //   return FormatUtils.formatNumber((num / 1000000000), { decimalFigures: decimals || 3 }) + 'B';
-  // }
-  // if (absNum >= 1000000) {
-  //   return FormatUtils.formatNumber((num / 1000000), { decimalFigures: decimals || 3 }) + 'M';
-  // }
   if (absNum >= 1000) {
     return FormatUtils.formatNumber(num, { decimalFigures: decimals, roundingMethod: 'round', shortScale: true });
   }
@@ -27,12 +19,9 @@ export const formatNumber = (num: number, options?: { format?: string, decimals?
   if (absNum < 0.00001) {
     return FormatUtils.formatNumber(num, { decimalFigures: 6 });
   }
-  if (absNum < 0.001 || absNum < 1) {
+  if (absNum < 1) {
     return FormatUtils.formatNumber(num, { decimalFigures: 4 });
   }
-  // if (absNum < 1) {
-  //   return FormatUtils.formatNumber(num, { decimalFigures: 4 });
-  // }
   return FormatUtils.formatNumber(num, { decimalFigures: 2 });
 }
 
@@ -52,33 +41,3 @@ export const formatNumberByFormat = (num: number, format: string, separators?: b
   const integerPart = formatNumber(parseInt(parts[0].replace(/,/g, '')), { decimals: decimalPart.length });
   return `${currencySymbol}${integerPart}`;
 }
-
-// export const FormatUtils.formatNumber = (value: number | string | BigNumber, options: IFormatNumberOptions): string => {
-//   let bigValue: BigNumber;
-//   if (value instanceof BigNumber) {
-//     bigValue = value;
-//   }
-//   else {
-//     bigValue = new BigNumber(value);
-//   }
-
-//   if (bigValue.isNaN() || !bigValue.isFinite()) {
-//     return '0';
-//   }
-
-//   if (options.precision || options.precision === 0) {
-//     let outputStr = '';
-//     if (bigValue.gte(1)) {
-//       outputStr = bigValue.toFormat(options.precision, options.roundingMode || BigNumber.ROUND_HALF_CEIL);
-//     }
-//     else {
-//       outputStr = bigValue.toNumber().toLocaleString('en-US', { maximumSignificantDigits: options.precision || 2 });
-//     }
-//     if (outputStr.length > 18) {
-//       outputStr = outputStr.substring(0, 18) + '...';
-//     }
-//     return outputStr;
-//   }
-
-//   return bigValue.toFormat();
-// }
