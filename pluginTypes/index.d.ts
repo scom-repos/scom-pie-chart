@@ -12,6 +12,12 @@ declare module "@scom/scom-pie-chart/global/interfaces.ts" {
             scroll?: boolean;
             position?: 'top' | 'bottom' | 'left' | 'right';
         };
+        padding?: {
+            top?: number;
+            bottom?: number;
+            left?: number;
+            right?: number;
+        };
         showDataLabels?: boolean;
         numberFormat?: string;
         valuesOptions?: {
@@ -211,6 +217,24 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                             showDataLabels: {
                                 type: string;
                             };
+                            padding: {
+                                type: string;
+                                title: string;
+                                properties: {
+                                    top: {
+                                        type: string;
+                                    };
+                                    bottom: {
+                                        type: string;
+                                    };
+                                    left: {
+                                        type: string;
+                                    };
+                                    right: {
+                                        type: string;
+                                    };
+                                };
+                            };
                             valuesOptions: {
                                 type: string;
                                 items: {
@@ -324,6 +348,24 @@ declare module "@scom/scom-pie-chart/formSchema.ts" {
                         };
                         showDataLabels: {
                             type: string;
+                        };
+                        padding: {
+                            type: string;
+                            title: string;
+                            properties: {
+                                top: {
+                                    type: string;
+                                };
+                                bottom: {
+                                    type: string;
+                                };
+                                left: {
+                                    type: string;
+                                };
+                                right: {
+                                    type: string;
+                                };
+                            };
                         };
                         valuesOptions: {
                             type: string;

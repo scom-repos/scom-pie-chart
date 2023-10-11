@@ -400,7 +400,7 @@ export default class ScomPieChart extends Module {
     this.lbDescription.caption = description;
     this.lbDescription.visible = !!description;
     this.pnlPieChart.height = `calc(100% - ${this.vStackInfo.offsetHeight + 10}px)`;
-    const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions } = options;
+    const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions, padding = {} } = options;
     let _legend = {
       show: legend?.show,
     }
@@ -433,6 +433,13 @@ export default class ScomPieChart extends Module {
         } : undefined
       }
     });
+
+    const gridPadding = {
+      top: padding.top || 60,
+      bottom: padding.bottom || 60,
+      left: padding.left || '10%',
+      right: padding.right || '10%'
+    }
     const _chartData: any = {
       tooltip: {
         trigger: 'item',
@@ -461,6 +468,9 @@ export default class ScomPieChart extends Module {
         }
       },
       legend: _legend,
+      grid: {
+        ...gridPadding
+      },
       series: [
         {
           name: serieName || yColumn,

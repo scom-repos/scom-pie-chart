@@ -44,6 +44,24 @@ function visualizationOptions(columns: string[]) {
             showDataLabels: {
                 type: 'boolean'
             },
+            padding: {
+                type: 'object',
+                title: 'Padding (px)',
+                properties: {
+                    top: {
+                        type: 'number'
+                    },
+                    bottom: {
+                        type: 'number'
+                    },
+                    left: {
+                        type: 'number'
+                    },
+                    right: {
+                        type: 'number'
+                    }
+                }
+            },
             valuesOptions: {
                 type: 'array',
                 items: {
