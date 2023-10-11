@@ -11,6 +11,12 @@ export interface IPieChartOptions {
     scroll?: boolean,
     position?: 'top' | 'bottom' | 'left' | 'right' // top, bottom: horizontal -- left, right: vertical
   },
+  padding?: {
+    top?: number,
+    bottom?: number,
+    left?: number,
+    right?: number
+  },
   showDataLabels?: boolean,
   numberFormat?: string,
   valuesOptions?: {

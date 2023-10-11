@@ -214,6 +214,24 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
                 showDataLabels: {
                     type: 'boolean'
                 },
+                padding: {
+                    type: 'object',
+                    title: 'Padding (px)',
+                    properties: {
+                        top: {
+                            type: 'number'
+                        },
+                        bottom: {
+                            type: 'number'
+                        },
+                        left: {
+                            type: 'number'
+                        },
+                        right: {
+                            type: 'number'
+                        }
+                    }
+                },
                 valuesOptions: {
                     type: 'array',
                     items: {
@@ -857,7 +875,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.lbDescription.caption = description;
             this.lbDescription.visible = !!description;
             this.pnlPieChart.height = `calc(100% - ${this.vStackInfo.offsetHeight + 10}px)`;
-            const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions } = options;
+            const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions, padding = {} } = options;
             let _legend = {
                 show: legend === null || legend === void 0 ? void 0 : legend.show,
             };
@@ -890,6 +908,12 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     } : undefined
                 };
             });
+            const gridPadding = {
+                top: padding.top || 60,
+                bottom: padding.bottom || 60,
+                left: padding.left || '10%',
+                right: padding.right || '10%'
+            };
             const _chartData = {
                 tooltip: {
                     trigger: 'item',
@@ -920,6 +944,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     }
                 },
                 legend: _legend,
+                grid: Object.assign({}, gridPadding),
                 series: [
                     {
                         name: serieName || yColumn,
