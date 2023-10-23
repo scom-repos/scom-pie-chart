@@ -18,17 +18,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 define("@scom/scom-pie-chart/global/interfaces.ts", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -347,11 +336,15 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
             dataSchema: {
                 type: 'object',
                 required: ['title'],
-                properties: Object.assign({ title: {
+                properties: {
+                    title: {
                         type: 'string'
-                    }, description: {
+                    },
+                    description: {
                         type: 'string'
-                    } }, theme)
+                    },
+                    ...theme
+                }
             },
             uiSchema: {
                 type: 'Categorization',
@@ -412,12 +405,17 @@ define("@scom/scom-pie-chart/formSchema.ts", ["require", "exports"], function (r
         return {
             dataSchema: {
                 type: 'object',
-                properties: Object.assign({ title: {
+                properties: {
+                    title: {
                         type: 'string',
                         required: true
-                    }, description: {
+                    },
+                    description: {
                         type: 'string'
-                    }, options: visualizationOptions(columns) }, theme)
+                    },
+                    options: visualizationOptions(columns),
+                    ...theme
+                }
             },
             uiSchema: {
                 type: 'Categorization',
@@ -602,34 +600,34 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                         return {
                             execute: async () => {
                                 oldData = JSON.parse(JSON.stringify(this._data));
-                                const { title, description, options } = userInputData, themeSettings = __rest(userInputData, ["title", "description", "options"]);
+                                const { title, description, options, ...themeSettings } = userInputData;
                                 const generalSettings = {
                                     title,
                                     description,
                                 };
                                 if (advancedSchema) {
-                                    this._data = Object.assign(Object.assign({}, this._data), generalSettings);
+                                    this._data = { ...this._data, ...generalSettings };
                                 }
                                 else {
-                                    this._data = Object.assign(Object.assign({}, generalSettings), { options });
+                                    this._data = { ...generalSettings, options };
                                 }
-                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                if (builder?.setData)
                                     builder.setData(this._data);
                                 this.setData(this._data);
                                 oldTag = JSON.parse(JSON.stringify(this.tag));
-                                if (builder === null || builder === void 0 ? void 0 : builder.setTag)
+                                if (builder?.setTag)
                                     builder.setTag(themeSettings);
                                 else
                                     this.setTag(themeSettings);
                             },
                             undo: () => {
                                 if (advancedSchema)
-                                    oldData = Object.assign(Object.assign({}, oldData), { options: this._data.options });
-                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    oldData = { ...oldData, options: this._data.options };
+                                if (builder?.setData)
                                     builder.setData(oldData);
                                 this.setData(oldData);
                                 this.tag = JSON.parse(JSON.stringify(oldTag));
-                                if (builder === null || builder === void 0 ? void 0 : builder.setTag)
+                                if (builder?.setTag)
                                     builder.setTag(this.tag);
                                 else
                                     this.setTag(this.tag);
@@ -647,25 +645,25 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                         let _oldData = DefaultData;
                         return {
                             execute: async () => {
-                                _oldData = Object.assign({}, this._data);
-                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.mode)
-                                    this._data.mode = userInputData === null || userInputData === void 0 ? void 0 : userInputData.mode;
-                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.file)
-                                    this._data.file = userInputData === null || userInputData === void 0 ? void 0 : userInputData.file;
-                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.dataSource)
-                                    this._data.dataSource = userInputData === null || userInputData === void 0 ? void 0 : userInputData.dataSource;
-                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.queryId)
-                                    this._data.queryId = userInputData === null || userInputData === void 0 ? void 0 : userInputData.queryId;
-                                if (userInputData === null || userInputData === void 0 ? void 0 : userInputData.apiEndpoint)
-                                    this._data.apiEndpoint = userInputData === null || userInputData === void 0 ? void 0 : userInputData.apiEndpoint;
-                                if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.options) !== undefined)
+                                _oldData = { ...this._data };
+                                if (userInputData?.mode)
+                                    this._data.mode = userInputData?.mode;
+                                if (userInputData?.file)
+                                    this._data.file = userInputData?.file;
+                                if (userInputData?.dataSource)
+                                    this._data.dataSource = userInputData?.dataSource;
+                                if (userInputData?.queryId)
+                                    this._data.queryId = userInputData?.queryId;
+                                if (userInputData?.apiEndpoint)
+                                    this._data.apiEndpoint = userInputData?.apiEndpoint;
+                                if (userInputData?.options !== undefined)
                                     this._data.options = userInputData.options;
-                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                if (builder?.setData)
                                     builder.setData(this._data);
                                 this.setData(this._data);
                             },
                             undo: () => {
-                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                if (builder?.setData)
                                     builder.setData(_oldData);
                                 this.setData(_oldData);
                             },
@@ -675,11 +673,18 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     customUI: {
                         render: (data, onConfirm, onChange) => {
                             const vstack = new components_5.VStack(null, { gap: '1rem' });
-                            const dataSourceSetup = new scom_chart_data_source_setup_1.default(null, Object.assign(Object.assign({}, this._data), { chartData: JSON.stringify(this.pieChartData), onCustomDataChanged: async (dataSourceSetupData) => {
+                            const dataSourceSetup = new scom_chart_data_source_setup_1.default(null, {
+                                ...this._data,
+                                chartData: JSON.stringify(this.pieChartData),
+                                onCustomDataChanged: async (dataSourceSetupData) => {
                                     if (onChange) {
-                                        onChange(true, Object.assign(Object.assign({}, this._data), dataSourceSetupData));
+                                        onChange(true, {
+                                            ...this._data,
+                                            ...dataSourceSetupData
+                                        });
                                     }
-                                } }));
+                                }
+                            });
                             const hstackBtnConfirm = new components_5.HStack(null, {
                                 verticalAlignment: 'center',
                                 horizontalAlignment: 'end'
@@ -701,18 +706,26 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                             vstack.append(hstackBtnConfirm);
                             if (onChange) {
                                 dataOptionsForm.onCustomInputChanged = async (optionsFormData) => {
-                                    onChange(true, Object.assign(Object.assign(Object.assign({}, this._data), optionsFormData), dataSourceSetup.data));
+                                    onChange(true, {
+                                        ...this._data,
+                                        ...optionsFormData,
+                                        ...dataSourceSetup.data
+                                    });
                                 };
                             }
                             button.onClick = async () => {
                                 const { dataSource, file, mode } = dataSourceSetup.data;
                                 if (mode === scom_chart_data_source_setup_1.ModeType.LIVE && !dataSource)
                                     return;
-                                if (mode === scom_chart_data_source_setup_1.ModeType.SNAPSHOT && !(file === null || file === void 0 ? void 0 : file.cid))
+                                if (mode === scom_chart_data_source_setup_1.ModeType.SNAPSHOT && !file?.cid)
                                     return;
                                 if (onConfirm) {
                                     const optionsFormData = await dataOptionsForm.refreshFormData();
-                                    onConfirm(true, Object.assign(Object.assign(Object.assign({}, this._data), optionsFormData), dataSourceSetup.data));
+                                    onConfirm(true, {
+                                        ...this._data,
+                                        ...optionsFormData,
+                                        ...dataSourceSetup.data
+                                    });
                                 }
                             };
                             return vstack;
@@ -764,7 +777,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     getData: this.getData.bind(this),
                     setData: async (data) => {
                         const defaultData = data_json_1.default.defaultBuilderData;
-                        await this.setData(Object.assign(Object.assign({}, defaultData), data));
+                        await this.setData({ ...defaultData, ...data });
                     },
                     getTag: this.getTag.bind(this),
                     setTag: this.setTag.bind(this)
@@ -789,7 +802,10 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                             const utf8String = decodeURIComponent(params.data);
                             const decodedString = window.atob(utf8String);
                             const newData = JSON.parse(decodedString);
-                            let resultingData = Object.assign(Object.assign({}, self._data), newData);
+                            let resultingData = {
+                                ...self._data,
+                                ...newData
+                            };
                             await this.setData(resultingData);
                         }
                     },
@@ -804,9 +820,8 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             value ? this.style.setProperty(name, value) : this.style.removeProperty(name);
         }
         updateTheme() {
-            var _a;
             if (this.pieChartContainer) {
-                this.pieChartContainer.style.boxShadow = ((_a = this.tag) === null || _a === void 0 ? void 0 : _a.darkShadow) ? '0 -2px 10px rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.16) 0px 1px 4px';
+                this.pieChartContainer.style.boxShadow = this.tag?.darkShadow ? '0 -2px 10px rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.16) 0px 1px 4px';
             }
             const tags = this.tag || {};
             this.updateStyle('--custom-text-color', tags.customFontColor ? tags.fontColor : tags.customWidgetsColor ? tags.widgetsColor : tags.parentCustomFontColor ? tags.parentFontColor : '');
@@ -817,28 +832,26 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.updateTheme();
         }
         async updateChartData() {
-            var _a;
             this.loadingElm.visible = true;
-            if (((_a = this._data) === null || _a === void 0 ? void 0 : _a.mode) === scom_chart_data_source_setup_1.ModeType.SNAPSHOT)
+            if (this._data?.mode === scom_chart_data_source_setup_1.ModeType.SNAPSHOT)
                 await this.renderSnapshotData();
             else
                 await this.renderLiveData();
             this.loadingElm.visible = false;
         }
         async renderSnapshotData() {
-            var _a;
-            if ((_a = this._data.file) === null || _a === void 0 ? void 0 : _a.cid) {
+            if (this._data.file?.cid) {
                 try {
                     const data = await (0, scom_chart_data_source_setup_1.fetchContentByCID)(this._data.file.cid);
                     if (data) {
                         const { metadata, rows } = data;
                         this.pieChartData = rows;
-                        this.columnNames = (metadata === null || metadata === void 0 ? void 0 : metadata.column_names) || [];
+                        this.columnNames = metadata?.column_names || [];
                         this.onUpdateBlock();
                         return;
                     }
                 }
-                catch (_b) { }
+                catch { }
             }
             this.pieChartData = [];
             this.columnNames = [];
@@ -856,12 +869,12 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     if (data) {
                         const { metadata, rows } = data;
                         this.pieChartData = rows;
-                        this.columnNames = (metadata === null || metadata === void 0 ? void 0 : metadata.column_names) || [];
+                        this.columnNames = metadata?.column_names || [];
                         this.onUpdateBlock();
                         return;
                     }
                 }
-                catch (_a) { }
+                catch { }
             }
             this.pieChartData = [];
             this.columnNames = [];
@@ -877,7 +890,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             this.pnlPieChart.height = `calc(100% - ${this.vStackInfo.offsetHeight + 10}px)`;
             const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions, padding = {} } = options;
             let _legend = {
-                show: legend === null || legend === void 0 ? void 0 : legend.show,
+                show: legend?.show,
             };
             if (legend) {
                 if (legend.position) {
@@ -897,7 +910,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 const values = valuesOptions.find(f => f.name === v[xColumn]);
                 return {
                     value: v[yColumn],
-                    name: (values === null || values === void 0 ? void 0 : values.name) || v[xColumn],
+                    name: values?.name || v[xColumn],
                     itemStyle: values ? { color: values.color } : undefined,
                     label: showDataLabels ? {
                         show: true,
@@ -944,7 +957,9 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                     }
                 },
                 legend: _legend,
-                grid: Object.assign({}, gridPadding),
+                grid: {
+                    ...gridPadding
+                },
                 series: [
                     {
                         name: serieName || yColumn,
@@ -968,9 +983,8 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             pieChart.drawChart();
         }
         resizeChart() {
-            var _a;
             if (this.pnlPieChart) {
-                (_a = this.pnlPieChart.firstChild) === null || _a === void 0 ? void 0 : _a.resize();
+                this.pnlPieChart.firstChild?.resize();
             }
         }
         async init() {
