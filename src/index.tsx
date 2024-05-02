@@ -12,15 +12,17 @@ import {
   Panel,
   PieChart,
   Button,
-  IUISchema
+  IUISchema,
+  Modal
 } from '@ijstech/components';
-import { IPieChartConfig, IPieChartOptions, formatNumberByFormat } from './global/index';
+import { IPieChartConfig, formatNumberByFormat } from './global/index';
 import { chartStyle, containerStyle, textStyle } from './index.css';
 import assets from './assets';
 import dataJson from './data.json';
 import ScomChartDataSourceSetup, { DataSource, fetchContentByCID, callAPI, ModeType } from '@scom/scom-chart-data-source-setup';
 import { getBuilderSchema, getEmbedderSchema } from './formSchema';
 import ScomPieChartDataOptionsForm from './dataOptionsForm';
+import types from './dts/index';
 const Theme = Styles.Theme.ThemeVars;
 
 interface ScomPieChartElement extends ControlElement {
@@ -45,8 +47,20 @@ const DefaultData: IPieChartConfig = {
   mode: ModeType.LIVE
 };
 
+interface ICustomWidget {
+  showConfigurator: (parent: Modal, prop: string) => void;
+  register: () => { types: string; defaultData: IPieChartConfig };
+}
+
 @customModule
-@customElements('i-scom-pie-chart')
+@customElements('i-scom-pie-chart', {
+  icon: 'chart-pie',
+    className: 'ScomPieChart',
+    props: {
+      data: {type: 'object'}
+    },
+    events: {}
+})
 export default class ScomPieChart extends Module {
   private pieChartContainer: VStack;
   private vStackInfo: HStack;
@@ -69,6 +83,30 @@ export default class ScomPieChart extends Module {
 
   constructor(parent?: Container, options?: ScomPieChartElement) {
     super(parent, options);
+  }
+
+  showConfigurator(parent: Modal, prop: string) {
+    const props = this._getDesignPropValue('data');
+    const builderTarget = this.getConfigurators().find((conf: any) => conf.target === 'Builders');
+    const dataAction = builderTarget?.getActions().find((action: any) => action.name === prop);
+    const self = this;
+    if (dataAction) {
+      const control = dataAction.customUI.render(props, (result: boolean, data: any) => {
+        parent.visible = false;
+        self.onConfigSave(data);
+      })
+      parent.item = control;
+      parent.visible = true;
+    }
+  }
+
+  private onConfigSave(data: IPieChartConfig) {
+    this._setDesignPropValue('data', data);
+    this.setData({...data});
+  }
+
+  register() {
+    return { types, defaultData: dataJson.defaultBuilderData as IPieChartConfig };
   }
 
   private getData() {
@@ -498,14 +536,13 @@ export default class ScomPieChart extends Module {
     pieChart.drawChart();
   }
 
-  private resizeChart() {
+  resize() {
     if (this.pnlPieChart) {
       (this.pnlPieChart.firstChild as PieChart)?.resize();
     }
   }
 
   async init() {
-    this.isReadyCallbackQueued = true;
     this.updateTheme();
     super.init();
     this.classList.add(chartStyle);
@@ -522,11 +559,10 @@ export default class ScomPieChart extends Module {
         this.setData(data);
       }
     }
-    this.isReadyCallbackQueued = false;
     this.executeReadyCallback();
     window.addEventListener('resize', () => {
       setTimeout(() => {
-        this.resizeChart();
+        this.resize();
       }, 300);
     });
   }
