@@ -75,6 +75,7 @@ declare module "@scom/scom-pie-chart/assets.ts" {
 declare module "@scom/scom-pie-chart/data.json.ts" {
     const _default_1: {
         defaultBuilderData: {
+            mode: string;
             dataSource: string;
             queryId: string;
             title: string;
