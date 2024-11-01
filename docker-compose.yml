@@ -6,17 +6,23 @@ services:
     volumes:
       - .:/app
     command: bash -c "cd /app && rm -rf node_modules && rm -f package-lock.json && npm i"
-  build: 
+  installTest:
     image: node:18
     user: node
     volumes:
       - .:/app
-    command: bash -c "cd /app && npm run build"  
-  serve:
+    command: bash -c "cd /app/test && rm -rf node_modules && rm -f package-lock.json && npm i && cd .."
+  build:
+    image: node:18
+    user: node
+    volumes:
+      - .:/app
+    command: bash -c "cd /app && npm run build"
+  test:
     image: node:18
     user: node
     ports:
-      - "8075:8080"
+      - '8075:8080'
     volumes:
       - .:/app
-    command: bash -c "cd /app && npm run build && npm run serve"
+    command: bash -c "cd /app && npm run test"

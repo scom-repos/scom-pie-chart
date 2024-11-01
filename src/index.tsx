@@ -10,11 +10,11 @@ import {
   VStack,
   Styles,
   Panel,
-  PieChart,
   Button,
   IUISchema,
   Modal
 } from '@ijstech/components';
+import { ScomCharts } from '@scom/scom-charts';
 import { IPieChartConfig, formatNumberByFormat } from './global/index';
 import { chartStyle, containerStyle, textStyle } from './index.css';
 import assets from './assets';
@@ -527,7 +527,7 @@ export default class ScomPieChart extends Module {
       ]
     };
     this.pnlPieChart.clearInnerHTML();
-    const pieChart = new PieChart(this.pnlPieChart, {
+    const pieChart = new ScomCharts(this.pnlPieChart, {
       data: _chartData,
       width: '100%',
       height: '100%'
@@ -538,7 +538,7 @@ export default class ScomPieChart extends Module {
 
   resize() {
     if (this.pnlPieChart) {
-      (this.pnlPieChart.firstChild as PieChart)?.resize();
+      (this.pnlPieChart.firstChild as ScomCharts)?.resize();
     }
   }
 

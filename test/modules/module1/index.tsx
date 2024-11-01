@@ -1,4 +1,5 @@
 import { Module, customModule, Container } from '@ijstech/components';
+import { ModeType } from '@scom/scom-chart-data-source-setup';
 import ScomPieChart from '@scom/scom-pie-chart';
 
 @customModule
@@ -16,7 +17,9 @@ export default class Module1 extends Module {
             <i-scom-pie-chart
                 margin={{ left: 'auto', right: 'auto' }}
                 data={{
-                    apiEndpoint: "/dune/query/2030664",
+                    dataSource: 'Custom',
+                    mode: ModeType.LIVE,
+                    apiEndpoint: 'https://api.dune.com/api/v1/query/2030664/results?api_key=',
                     title: 'Ethereum Beacon Chain Deposits Entity',
                     options: {
                         xColumn: 'entity',
