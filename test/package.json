@@ -11,7 +11,7 @@
         "@ijstech/cli": "^0.1.28",
         "@scom/dapp": "^0.1.11",
         "@ijstech/compiler": "^0.1.26",
-        "@scom/scom-charts": "https://github.com/scom-repos/scom-charts",
+        "@scom/scom-charts": "^0.1.0",
         "@scom/scom-pie-chart": "file:./ref"
     },
     "scripts": {
