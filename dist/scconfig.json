@@ -4,7 +4,8 @@
     "version": "0.1.13",
     "dependencies": [
         "@ijstech/components",
-        "@ijstech/eth-wallet",
-        "@scom/scom-chart-data-source-setup"
+        "@scom/scom-chart-data-source-setup",
+        "@scom/scom-charts",
+        "@ijstech/eth-wallet"
     ]
 }
