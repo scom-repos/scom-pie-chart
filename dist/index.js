@@ -839,7 +839,7 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
             };
         }
         getChartData() {
-            const { options } = this._data;
+            const { options } = this.model.getData();
             const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions, padding = {} } = options;
             let _legend = {
                 show: legend?.show,

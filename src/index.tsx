@@ -72,7 +72,7 @@ export default class ScomPieChart extends ScomCharts<IPieChartOptions> implement
   }
 
   getChartData() {
-    const { options } = this._data;
+    const { options } = this.model.getData();
     const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions, padding = {} } = options;
     let _legend = {
       show: legend?.show,
