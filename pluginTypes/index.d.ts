@@ -800,7 +800,7 @@ declare module "@scom/scom-pie-chart" {
                 };
             };
         };
-        getChartData(): {
+        getChartData(options?: IPieChartOptions): {
             chartData: any;
             defaulBuildertData: IPieChartConfig;
         };
