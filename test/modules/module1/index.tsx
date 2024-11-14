@@ -17,9 +17,9 @@ export default class Module1 extends Module {
             <i-scom-pie-chart
                 margin={{ left: 'auto', right: 'auto' }}
                 data={{
-                    dataSource: 'Custom',
+                    dataSource: 'Dune',
                     mode: ModeType.LIVE,
-                    apiEndpoint: 'https://api.dune.com/api/v1/query/2030664/results?api_key=',
+                    queryId: '2030664',
                     title: 'Ethereum Beacon Chain Deposits Entity',
                     options: {
                         xColumn: 'entity',

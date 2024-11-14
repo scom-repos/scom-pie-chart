@@ -14,7 +14,6 @@ define("@scom/scom-pie-chart/data.json.ts", ["require", "exports"], function (re
     ///<amd-module name='@scom/scom-pie-chart/data.json.ts'/> 
     exports.default = {
         "defaultBuilderData": {
-            // "apiEndpoint": "/dune/query/2030664",
             "mode": "Live",
             "dataSource": "Dune",
             "queryId": "2030664",
@@ -838,8 +837,9 @@ define("@scom/scom-pie-chart", ["require", "exports", "@ijstech/components", "@s
                 embededSchema: (0, formSchema_1.getEmbedderSchema)(columns)
             };
         }
-        getChartData() {
-            const { options } = this.model.getData();
+        getChartData(options) {
+            if (!options)
+                return;
             const { xColumn, yColumn, legend, showDataLabels, serieName, numberFormat, valuesOptions, padding = {} } = options;
             let _legend = {
                 show: legend?.show,
